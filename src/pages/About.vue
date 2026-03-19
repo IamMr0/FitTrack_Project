@@ -1,83 +1,94 @@
 <template>
-  <div class="container-fluid py-5 px-3">
-    <div class="col-12 col-md-8 col-lg-6 mx-auto">
-      <h1 class="fw-bold mb-4">About FitTrack</h1>
-      <p class="lead mb-5">
+  <div class="container-fluid py-5 px-lg-5 fade-in">
+    <div class="col-12 col-md-8 col-lg-6 mx-auto text-center mb-5">
+      <h1 class="display-4 fw-bold mb-3">About FitTrack</h1>
+      <p class="lead text-muted">
         FitTrack is your personal fitness companion designed to help you achieve your health goals through consistent tracking and community engagement.
       </p>
+    </div>
 
+    <div class="col-12 col-md-8 col-lg-6 mx-auto">
       <!-- Personalisation Card -->
-      <div class="card shadow-sm p-4 mb-4">
-        <h4 class="fw-bold mb-3">Personalise Your Experience</h4>
-        <div class="mb-3">
-          <label for="firstName" class="form-label">First Name</label>
-          <input 
-            id="firstName" 
-            v-model.trim="user.firstName" 
-            type="text" 
-            class="form-control" 
-            placeholder="John"
-          >
-        </div>
-        <div class="mb-3">
-          <label for="lastName" class="form-label">Last Name</label>
-          <input 
-            id="lastName" 
-            v-model.trim="user.lastName" 
-            type="text" 
-            class="form-control" 
-            placeholder="Doe"
-          >
+      <div class="glass p-4 p-lg-5 rounded-4 mb-5 shadow-sm border-0">
+        <h4 class="fw-bold mb-4 d-flex align-items-center gap-2">
+          <span class="text-primary">👤</span> Personalize Your Experience
+        </h4>
+        <div class="row g-3">
+          <div class="col-12 col-sm-6">
+            <label for="firstName" class="form-label small fw-bold text-muted text-uppercase tracking-wider">First Name</label>
+            <input 
+              id="firstName" 
+              v-model.trim="user.firstName" 
+              type="text" 
+              class="form-control py-2 rounded-3" 
+              placeholder="e.g. John"
+            >
+          </div>
+          <div class="col-12 col-sm-6">
+            <label for="lastName" class="form-label small fw-bold text-muted text-uppercase tracking-wider">Last Name</label>
+            <input 
+              id="lastName" 
+              v-model.trim="user.lastName" 
+              type="text" 
+              class="form-control py-2 rounded-3" 
+              placeholder="e.g. Doe"
+            >
+          </div>
         </div>
         
-        <div v-if="fullName" class="alert alert-success mt-3 mb-0">
-          Welcome, <strong>{{ fullName }}</strong>! Ready to crush your goals?
+        <div v-if="fullName" class="mt-4 p-3 bg-primary-light rounded-3 border-start border-primary border-4 slide-up">
+          <div class="fw-bold text-primary">Welcome, {{ fullName }}!</div>
+          <div class="small text-muted">Ready to crush your goals today?</div>
         </div>
       </div>
 
       <!-- Environment Selector Card -->
-      <div class="card shadow-sm p-4">
-        <h4 class="fw-bold mb-3">Choose Your Environment</h4>
-        <div class="mb-3">
-          <div class="form-check form-check-inline">
-            <input 
-              class="form-check-input" 
-              type="radio" 
-              name="envOptions" 
-              id="mountainRadio" 
-              value="mountain" 
-              v-model="environment"
-            >
-            <label class="form-check-label" for="mountainRadio">Mountain Training</label>
+      <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <div class="card-body p-4 p-lg-5">
+          <h4 class="fw-bold mb-4 d-flex align-items-center gap-2">
+            <span class="text-primary">🌄</span> Choose Your Vibe
+          </h4>
+          <div class="d-flex gap-4 mb-4">
+            <div class="form-check custom-radio">
+              <input 
+                class="form-check-input" 
+                type="radio" 
+                name="envOptions" 
+                id="mountainRadio" 
+                value="mountain" 
+                v-model="environment"
+              >
+              <label class="form-check-label fw-medium" for="mountainRadio">Highlands</label>
+            </div>
+            <div class="form-check custom-radio">
+              <input 
+                class="form-check-input" 
+                type="radio" 
+                name="envOptions" 
+                id="oceanRadio" 
+                value="ocean" 
+                v-model="environment"
+              >
+              <label class="form-check-label fw-medium" for="oceanRadio">Coastal</label>
+            </div>
           </div>
-          <div class="form-check form-check-inline">
-            <input 
-              class="form-check-input" 
-              type="radio" 
-              name="envOptions" 
-              id="oceanRadio" 
-              value="ocean" 
-              v-model="environment"
-            >
-            <label class="form-check-label" for="oceanRadio">Ocean Training</label>
-          </div>
-        </div>
 
-        <div class="mt-3">
-          <img 
-            v-if="environment === 'mountain'" 
-            src="../assets/images/mountain.jpg" 
-            alt="Mountain training" 
-            class="img-fluid rounded shadow-sm"
-            @error="handleImageError"
-          >
-          <img 
-            v-if="environment === 'ocean'" 
-            src="../assets/images/ocean.jpg" 
-            alt="Ocean training" 
-            class="img-fluid rounded shadow-sm"
-            @error="handleImageError"
-          >
+          <div class="overflow-hidden rounded-4 shadow-sm transition-all">
+            <img 
+              v-if="environment === 'mountain'" 
+              src="../assets/images/mountain.jpg" 
+              alt="Mountain training" 
+              class="img-fluid fade-in"
+              @error="handleImageError"
+            >
+            <img 
+              v-if="environment === 'ocean'" 
+              src="../assets/images/ocean.jpg" 
+              alt="Ocean training" 
+              class="img-fluid fade-in"
+              @error="handleImageError"
+            >
+          </div>
         </div>
       </div>
     </div>
