@@ -1,0 +1,107 @@
+[
+  {
+    "id": 1,
+    "date": "2025-01-05",
+    "title": "The Science of Progressive Overload",
+    "content": "Progressive overload is the gradual increase of stress placed on the body during exercise. Studies confirm it is the single most important factor in building strength and muscle mass over time.",
+    "category": "Strength"
+  },
+  {
+    "id": 2,
+    "date": "2025-01-12",
+    "title": "Why You Should Prioritise Sleep for Recovery",
+    "content": "Sleep is when the body repairs muscle tissue and consolidates motor skills. Athletes who sleep less than 7 hours show significantly slower strength gains and higher injury rates.",
+    "category": "Recovery"
+  },
+  {
+    "id": 3,
+    "date": "2025-01-20",
+    "title": "Nutrition Timing: Does It Matter?",
+    "content": "Research on nutrient timing suggests consuming protein within two hours of training can improve muscle protein synthesis. Total daily intake remains the most critical factor.",
+    "category": "Nutrition"
+  },
+  {
+    "id": 4,
+    "date": "2025-02-03",
+    "title": "Zone 2 Cardio Explained",
+    "content": "Zone 2 training targets 60–70% of maximum heart rate. It builds aerobic base, improves fat oxidation, and is increasingly popular among endurance athletes.",
+    "category": "Cardio"
+  },
+  {
+    "id": 5,
+    "date": "2025-02-11",
+    "title": "The Benefits of Cold Water Immersion",
+    "content": "Cold water immersion after intense training can reduce delayed onset muscle soreness. However, it may blunt hypertrophy when used immediately post-strength session.",
+    "category": "Recovery"
+  },
+  {
+    "id": 6,
+    "date": "2025-02-18",
+    "title": "How to Structure a Push Pull Legs Routine",
+    "content": "Push Pull Legs splits training into three movement patterns. This allows each muscle group 48–72 hours of recovery while maintaining high weekly training volume.",
+    "category": "Strength"
+  },
+  {
+    "id": 7,
+    "date": "2025-03-01",
+    "title": "Creatine: What the Research Says",
+    "content": "Creatine monohydrate remains the most studied sports supplement. It increases phosphocreatine stores, directly improving performance in short high-intensity efforts.",
+    "category": "Nutrition"
+  },
+  {
+    "id": 8,
+    "date": "2025-03-10",
+    "title": "Mobility Work for Lifters",
+    "content": "Improving hip and thoracic mobility unlocks deeper squats and safer pressing mechanics. Daily mobility practice of 10–15 minutes significantly reduces injury risk.",
+    "category": "Flexibility"
+  },
+  {
+    "id": 9,
+    "date": "2025-03-18",
+    "title": "The Truth About HIIT Training",
+    "content": "High-intensity interval training burns significant calories in short sessions but requires adequate recovery. Combining HIIT with Zone 2 work yields the best cardiovascular improvements.",
+    "category": "Cardio"
+  },
+  {
+    "id": 10,
+    "date": "2025-03-25",
+    "title": "Building Habit Loops for Consistent Training",
+    "content": "Attaching workouts to existing routines greatly improves adherence. Consistent cues and rewards are more powerful than motivation alone.",
+    "category": "Mindset"
+  },
+  {
+    "id": 11,
+    "date": "2025-04-02",
+    "title": "Foam Rolling: Useful or Overrated?",
+    "content": "Foam rolling increases short-term range of motion and reduces perceived soreness. It is a useful warm-up tool before intense sessions.",
+    "category": "Recovery"
+  },
+  {
+    "id": 12,
+    "date": "2025-04-09",
+    "title": "Protein Requirements for Muscle Growth",
+    "content": "Current evidence suggests 1.6–2.2g of protein per kg of bodyweight is optimal for muscle hypertrophy. Spreading intake across four to five meals maximises synthesis.",
+    "category": "Nutrition"
+  },
+  {
+    "id": 13,
+    "date": "2025-04-15",
+    "title": "Training to Failure: Pros and Cons",
+    "content": "Training to muscular failure can maximise motor unit recruitment but increases fatigue and recovery time. Most experts recommend leaving 1–3 reps in reserve.",
+    "category": "Strength"
+  },
+  {
+    "id": 14,
+    "date": "2025-04-22",
+    "title": "Running Economy and How to Improve It",
+    "content": "Running economy refers to oxygen cost at a given pace. Strength training, plyometrics, and proper running form all contribute to measurable improvements.",
+    "category": "Cardio"
+  },
+  {
+    "id": 15,
+    "date": "2025-05-01",
+    "title": "Mental Health Benefits of Regular Exercise",
+    "content": "Exercise consistently reduces symptoms of anxiety and depression. Even 30 minutes of moderate activity three times per week produces significant improvements in mood.",
+    "category": "Mindset"
+  }
+]

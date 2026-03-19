@@ -1,5 +1,15 @@
 import { createApp } from 'vue'
-import './style.css'
+import { createPinia } from 'pinia'
 import App from './App.vue'
+import router from './router/index.js'
+import { vFocus, vHighlight } from './directives/index.js'
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import './style.css'
 
-createApp(App).mount('#app')
+const app = createApp(App)
+app.use(createPinia())
+app.use(router)
+app.directive('focus', vFocus)
+app.directive('highlight', vHighlight)
+app.mount('#app')
