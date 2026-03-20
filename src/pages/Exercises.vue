@@ -71,89 +71,6 @@
         </div>
       </div>
 
-      <!-- Exercise Details Modal -->
-      <div
-        class="modal fade"
-        id="exerciseModal"
-        tabindex="-1"
-        aria-labelledby="exerciseModalLabel"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog modal-lg modal-dialog-centered">
-          <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
-            <div v-if="selectedExercise" class="modal-body p-0">
-              <div class="row g-0">
-                <div
-                  class="col-12 col-md-5 bg-white text-center p-4 d-flex align-items-center justify-content-center"
-                >
-                  <img
-                    :src="getExerciseGifUrl(selectedExercise.id)"
-                    :alt="selectedExercise.name"
-                    class="img-fluid rounded-4"
-                  />
-                </div>
-                <div class="col-12 col-md-7 p-4 p-lg-5">
-                  <div
-                    class="d-flex justify-content-between align-items-start mb-3"
-                  >
-                    <div>
-                      <div class="text-primary small fw-bold text-uppercase tracking-widest mb-1"
-                        >Exercise ID #{{ selectedExercise.id }}</div
-                      >
-                      <h2 class="fw-bold text-capitalize mb-0 display-6">
-                        {{ selectedExercise.name }}
-                      </h2>
-                    </div>
-                    <button
-                      type="button"
-                      class="btn-close"
-                      data-bs-dismiss="modal"
-                      aria-label="Close"
-                    ></button>
-                  </div>
- 
-                  <div class="mb-4 d-flex flex-wrap gap-2">
-                    <span class="badge bg-primary px-3 py-2 rounded-pill">{{
-                      selectedExercise.bodyPart
-                    }}</span>
-                    <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">{{
-                      selectedExercise.target
-                    }}</span>
-                    <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">{{
-                      selectedExercise.equipment
-                    }}</span>
-                    <span class="badge bg-warning text-dark px-3 py-2 rounded-pill text-capitalize">{{
-                      selectedExercise.difficulty || "beginner"
-                    }}</span>
-                  </div>
-
-                  <div v-if="selectedExercise.description" class="mb-4">
-                    <h6 class="fw-bold text-dark mb-2">Description</h6>
-                    <p class="small text-muted mb-0 leading-relaxed">
-                      {{ selectedExercise.description }}
-                    </p>
-                  </div>
-
-                  <div v-if="selectedExercise.secondaryMuscles?.length" class="mb-4">
-                    <h6 class="fw-bold text-dark mb-2">Secondary Muscles</h6>
-                    <div class="d-flex flex-wrap gap-2">
-                      <span v-for="m in selectedExercise.secondaryMuscles" :key="m" class="badge bg-primary-light text-primary px-3 py-2 rounded- pill border-0">{{ m }}</span>
-                    </div>
-                  </div>
-
-                  <h6 class="fw-bold text-dark mb-2">Instructions</h6>
-                  <ol class="ps-3 mb-0 small text-muted leading-relaxed">
-                    <li v-for="(step, idx) in selectedExercise.instructions" :key="idx" class="mb-2">
-                      {{ step }}
-                    </li>
-                  </ol>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div
         v-if="filteredExercises.length === 0"
         class="alert bg-white border rounded-4 text-center py-5 shadow-sm"
@@ -194,6 +111,92 @@
       </nav>
     </div>
   </div>
+
+  <!-- Exercise Details Modal (Teleported to body to avoid animation/transform conflicts) -->
+  <Teleport to="body">
+    <div
+      class="modal fade"
+      id="exerciseModal"
+      tabindex="-1"
+      aria-labelledby="exerciseModalLabel"
+      aria-hidden="true"
+      ref="modalRef"
+    >
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+          <div v-if="selectedExercise" class="modal-body p-0">
+            <div class="row g-0">
+              <div
+                class="col-12 col-md-5 bg-white text-center p-4 d-flex align-items-center justify-content-center"
+              >
+                <img
+                  :src="getExerciseGifUrl(selectedExercise.id)"
+                  :alt="selectedExercise.name"
+                  class="img-fluid rounded-4"
+                />
+              </div>
+              <div class="col-12 col-md-7 p-4 p-lg-5">
+                <div
+                  class="d-flex justify-content-between align-items-start mb-3"
+                >
+                  <div>
+                    <div class="text-primary small fw-bold text-uppercase tracking-widest mb-1"
+                      >Exercise ID #{{ selectedExercise.id }}</div
+                    >
+                    <h2 class="fw-bold text-capitalize mb-0 display-6">
+                      {{ selectedExercise.name }}
+                    </h2>
+                  </div>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+
+                <div class="mb-4 d-flex flex-wrap gap-2">
+                  <span class="badge bg-primary px-3 py-2 rounded-pill">{{
+                    selectedExercise.bodyPart
+                  }}</span>
+                  <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">{{
+                    selectedExercise.target
+                  }}</span>
+                  <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">{{
+                    selectedExercise.equipment
+                  }}</span>
+                  <span class="badge bg-warning text-dark px-3 py-2 rounded-pill text-capitalize">{{
+                    selectedExercise.difficulty || "beginner"
+                  }}</span>
+                </div>
+
+                <div v-if="selectedExercise.description" class="mb-4">
+                  <h6 class="fw-bold text-dark mb-2">Description</h6>
+                  <p class="small text-muted mb-0 leading-relaxed">
+                    {{ selectedExercise.description }}
+                  </p>
+                </div>
+
+                <div v-if="selectedExercise.secondaryMuscles?.length" class="mb-4">
+                  <h6 class="fw-bold text-dark mb-2">Secondary Muscles</h6>
+                  <div class="d-flex flex-wrap gap-2">
+                    <span v-for="m in selectedExercise.secondaryMuscles" :key="m" class="badge bg-primary-light text-primary px-3 py-2 rounded-pill border-0">{{ m }}</span>
+                  </div>
+                </div>
+
+                <h6 class="fw-bold text-dark mb-2">Instructions</h6>
+                <ol class="ps-3 mb-0 small text-muted leading-relaxed">
+                  <li v-for="(step, idx) in selectedExercise.instructions" :key="idx" class="mb-2">
+                    {{ step }}
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Teleport>
 </template>
 
 <style scoped>

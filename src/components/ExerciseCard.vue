@@ -5,8 +5,8 @@
       style="height: 220px"
     >
       <img
-        v-if="exercise.gifUrl"
-        :src="exercise.gifUrl"
+        v-if="exercise.id"
+        :src="getExerciseGifUrl(exercise.id)"
         :alt="exercise.name"
         class="img-fluid"
         style="max-height: 100%; mix-blend-mode: multiply;"
@@ -47,6 +47,8 @@
 </template>
 
 <script setup>
+import { getExerciseGifUrl } from '../api/exerciseApi'
+
 defineProps({
   exercise: {
     type: Object,
