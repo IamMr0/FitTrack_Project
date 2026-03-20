@@ -43,7 +43,7 @@
               <RouterLink class="nav-link px-3" to="/workouts">My Workouts</RouterLink>
             </li>
             <li class="nav-item ms-lg-2">
-              <button @click="handleLogout" class="btn btn-outline-light btn-sm px-3 rounded-pill">
+              <button @click="handleLogout" class="btn btn-outline-primary btn-sm px-3 rounded-pill">
                 Logout
               </button>
             </li>
@@ -80,6 +80,7 @@
 .brand-text {
   background: linear-gradient(45deg, var(--primary), var(--accent));
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
