@@ -27,8 +27,9 @@
                 class="form-control py-2 rounded-3" 
                 :class="{ 'is-invalid': v$.firstName.$error }"
                 placeholder="John"
+                aria-describedby="firstNameFeedback"
               >
-              <div class="invalid-feedback">First name is required.</div>
+              <div id="firstNameFeedback" class="invalid-feedback">First name is required.</div>
             </div>
 
             <div class="col-12 col-sm-6 mb-3">
@@ -40,8 +41,9 @@
                 class="form-control py-2 rounded-3" 
                 :class="{ 'is-invalid': v$.lastName.$error }"
                 placeholder="Doe"
+                aria-describedby="lastNameFeedback"
               >
-              <div class="invalid-feedback">Last name is required.</div>
+              <div id="lastNameFeedback" class="invalid-feedback">Last name is required.</div>
             </div>
           </div>
 
@@ -54,8 +56,9 @@
               class="form-control py-2 rounded-3" 
               :class="{ 'is-invalid': v$.email.$error }"
               placeholder="name@example.com"
+              aria-describedby="emailFeedback"
             >
-            <div class="invalid-feedback">Please enter a valid email.</div>
+            <div id="emailFeedback" class="invalid-feedback">Please enter a valid email.</div>
           </div>
 
           <div class="mb-3">
@@ -67,8 +70,9 @@
               class="form-control py-2 rounded-3" 
               :class="{ 'is-invalid': v$.password.$error }"
               placeholder="Min. 6 characters"
+              aria-describedby="passwordFeedback"
             >
-            <div class="invalid-feedback">Password must be at least 6 characters.</div>
+            <div id="passwordFeedback" class="invalid-feedback">Password must be at least 6 characters.</div>
           </div>
 
           <div class="mb-4">
@@ -80,8 +84,9 @@
               class="form-control py-2 rounded-3" 
               :class="{ 'is-invalid': v$.confirm.$error }"
               placeholder="Repeat password"
+              aria-describedby="confirmFeedback"
             >
-            <div class="invalid-feedback">Passwords do not match.</div>
+            <div id="confirmFeedback" class="invalid-feedback">Passwords do not match.</div>
           </div>
 
           <button type="submit" class="btn btn-primary w-100 fw-bold py-3 rounded-pill shadow" :disabled="loading">

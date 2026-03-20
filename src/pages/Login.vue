@@ -8,7 +8,7 @@
            <p class="text-muted small">Enter your credentials to continue your journey</p>
         </div>
 
-        <div v-if="error" class="alert bg-danger-light text-danger mb-4 py-2 small border-0 text-center rounded-3">
+        <div v-if="error" id="loginError" class="alert bg-danger-light text-danger mb-4 py-2 small border-0 text-center rounded-3" role="alert">
           {{ error }}
         </div>
 
@@ -23,6 +23,7 @@
               class="form-control py-2 rounded-3" 
               placeholder="name@example.com"
               required
+              aria-describedby="loginError"
             >
           </div>
 

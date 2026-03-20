@@ -19,10 +19,11 @@
     <div class="glass p-4 rounded-4 mb-5 shadow-sm">
       <div class="row g-4">
         <div class="col-12 col-md-6">
-          <label class="form-label small fw-bold text-uppercase tracking-wider">Search</label>
+          <label for="exerciseSearch" class="form-label small fw-bold text-uppercase tracking-wider">Search</label>
           <div class="input-group">
             <span class="input-group-text bg-white border-end-0 rounded-start-3">🔍</span>
             <input
+              id="exerciseSearch"
               v-model="search"
               type="text"
               class="form-control border-start-0 rounded-end-3 py-2"
@@ -32,8 +33,9 @@
           </div>
         </div>
         <div class="col-12 col-md-6">
-          <label class="form-label small fw-bold text-uppercase tracking-wider">Filter by Body Part</label>
+          <label for="exerciseBodyPart" class="form-label small fw-bold text-uppercase tracking-wider">Filter by Body Part</label>
           <select
+            id="exerciseBodyPart"
             v-model="selectedBodyPart"
             class="form-select py-2 rounded-3"
             @change="resetAndFetch"
@@ -65,49 +67,7 @@
       <!-- Exercise Grid -->
       <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 row-cols-xxl-4 g-4 mb-5">
         <div v-for="ex in paginated" :key="ex.id" class="col">
-          <div class="card h-100 border-0 shadow-sm overflow-hidden exercise-card-modern">
-            <div
-              class="card-img-top bg-light text-center p-3 d-flex align-items-center justify-content-center position-relative"
-              style="height: 220px"
-            >
-              <img
-                :src="getExerciseGifUrl(ex.id)"
-                :alt="ex.name"
-                class="img-fluid"
-                style="max-height: 100%; mix-blend-mode: multiply;"
-              />
-              <div class="position-absolute top-0 end-0 p-3">
-                <span class="badge bg-white text-primary rounded-pill shadow-sm">ID #{{ ex.id }}</span>
-              </div>
-            </div>
-            <div class="card-body p-4 d-flex flex-column">
-              <div class="d-flex flex-wrap gap-2 mb-3">
-                <span class="badge bg-primary-light text-primary px-3 rounded-pill text-capitalize">{{ ex.bodyPart }}</span>
-                <span class="badge bg-light text-muted px-3 rounded-pill text-capitalize border">{{ ex.target }}</span>
-              </div>
-              <h5 class="card-title fw-bold text-capitalize mb-3">{{ ex.name }}</h5>
-              <div class="mt-auto pt-3 border-top">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                  <div class="small">
-                    <div class="text-muted text-uppercase tracking-tighter" style="font-size: 0.65rem">Equipment</div>
-                    <div class="fw-bold text-dark">{{ ex.equipment }}</div>
-                  </div>
-                  <div class="small text-end">
-                    <div class="text-muted text-uppercase tracking-tighter" style="font-size: 0.65rem">Difficulty</div>
-                    <div class="fw-bold text-primary text-capitalize">{{ ex.difficulty || "beginner" }}</div>
-                  </div>
-                </div>
-                <button
-                  @click="showDetails(ex)"
-                  class="btn btn-primary btn-sm w-100 fw-bold py-2 rounded-3"
-                  data-bs-toggle="modal"
-                  data-bs-target="#exerciseModal"
-                >
-                  Explore Details
-                </button>
-              </div>
-            </div>
-          </div>
+          <ExerciseCard :exercise="ex" @showDetails="showDetails" />
         </div>
       </div>
 
@@ -276,6 +236,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from "vue";
+import ExerciseCard from "../components/ExerciseCard.vue";
 import {
   fetchExercises,
   fetchExercisesByBodyPart,

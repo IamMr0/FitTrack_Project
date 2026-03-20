@@ -48,9 +48,7 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h4 class="mb-0 fw-bold">Latest Updates</h4>
-      <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">
-        {{ filteredNews.length }} Articles
-      </span>
+      <span class="text-muted small">Showing {{ filteredNews.length }} result(s)</span>
     </div>
 
     <!-- News List -->

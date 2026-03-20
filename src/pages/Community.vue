@@ -40,46 +40,12 @@
 
       <!-- Feed -->
       <div v-if="posts.length">
-        <div v-for="post in posts" :key="post.id" class="card border-0 shadow-sm mb-4 overflow-hidden hover-lift-subtle">
-          <div class="card-body p-4 p-lg-5">
-            <div class="d-flex justify-content-between align-items-start mb-4">
-              <div class="d-flex align-items-center">
-                <div class="avatar-gradient text-white rounded-circle d-flex align-items-center justify-content-center fw-bold me-3 shadow-sm" style="width: 50px; height: 50px;">
-                  {{ post.userName.charAt(0) }}
-                </div>
-                <div>
-                  <h6 class="fw-bold mb-1 text-dark fs-5">{{ post.userName }}</h6>
-                  <small class="text-muted fw-medium d-flex align-items-center gap-1">
-                    <i class="bi bi-clock">🕒</i>
-                    {{ post.date }}
-                  </small>
-                </div>
-              </div>
-              <button 
-                v-if="auth.isLoggedIn && (post.userId === auth.user.id || auth.isAdmin)" 
-                @click="workoutStore.deletePost(post.id)" 
-                class="btn btn-link text-danger text-decoration-none p-0 fw-bold small"
-              >
-                Delete
-              </button>
-            </div>
-
-            <p class="card-text mb-4 fs-5 text-dark leading-relaxed">{{ post.content }}</p>
-
-            <div class="pt-4 border-top d-flex align-items-center">
-              <button 
-                @click="auth.isLoggedIn ? workoutStore.toggleLike(post.id) : null" 
-                class="btn border-0 d-flex align-items-center gap-2 p-0 transition-transform active:scale-90"
-                :disabled="!auth.isLoggedIn"
-              >
-                <div class="like-btn-inner d-flex align-items-center justify-content-center p-2 rounded-circle transition-colors"
-                     :class="isLiked(post.likes) ? 'bg-danger-light text-danger' : 'bg-light text-muted'">
-                  <span class="fs-5">{{ isLiked(post.likes) ? '❤️' : '🤍' }}</span>
-                </div>
-                <span class="fw-bold text-muted small">{{ post.likes.length }} {{ post.likes.length === 1 ? 'Like' : 'Likes' }}</span>
-              </button>
-            </div>
-          </div>
+        <div v-for="post in posts" :key="post.id" class="mb-4">
+          <PostCard
+            :post="post"
+            @delete="workoutStore.deletePost($event)"
+            @toggleLike="workoutStore.toggleLike($event)"
+          />
         </div>
       </div>
 
@@ -136,6 +102,7 @@ import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '../stores/authStore'
 import { useWorkoutStore } from '../stores/workoutStore'
+import PostCard from '../components/PostCard.vue'
 
 const auth = useAuthStore()
 const workoutStore = useWorkoutStore()
@@ -148,9 +115,5 @@ const handlePost = () => {
     workoutStore.addPost(postContent.value.trim())
     postContent.value = ''
   }
-}
-
-const isLiked = (likes) => {
-  return auth.user && likes.includes(auth.user.id)
 }
 </script>

@@ -12,6 +12,7 @@
           <i class="bi bi-plus-lg">+</i>
         </div>
         <h4 class="fw-bold mb-0 text-dark">{{ editingId ? 'Update Activity' : 'Log New Session' }}</h4>
+        <span id="formInstructions" class="visually-hidden">Fill in the workout details below to track your progress.</span>
       </div>
       
       <form @submit.prevent="handleSubmit">
@@ -26,6 +27,7 @@
               class="form-control py-2 rounded-3" 
               placeholder="e.g. Bench Press" 
               required
+              aria-describedby="formInstructions"
             >
           </div>
           <div class="col-6 col-md-3">
@@ -84,12 +86,19 @@
         <label class="form-label small fw-bold text-muted text-uppercase tracking-tighter">Search My Logs</label>
         <div class="input-group">
           <span class="input-group-text bg-white border-end-0 rounded-start-pill ps-3">🔍</span>
-          <input v-model="localFilters.search" type="text" class="form-control border-start-0 rounded-end-pill py-2" placeholder="Exercise name..." @input="applyFilters">
+          <input 
+            id="filterSearch"
+            v-model="localFilters.search" 
+            type="text" 
+            class="form-control border-start-0 rounded-end-pill py-2" 
+            placeholder="Exercise name..." 
+            @input="applyFilters"
+          >
         </div>
       </div>
       <div class="col-6 col-md-3">
-        <label class="form-label small fw-bold text-muted text-uppercase tracking-tighter">Category</label>
-        <select v-model="localFilters.type" class="form-select rounded-pill py-2" @change="applyFilters">
+        <label for="filterType" class="form-label small fw-bold text-muted text-uppercase tracking-tighter">Category</label>
+        <select id="filterType" v-model="localFilters.type" class="form-select rounded-pill py-2" @change="applyFilters">
           <option value="">All Categories</option>
           <option value="Strength">Strength</option>
           <option value="Cardio">Cardio</option>
@@ -97,8 +106,8 @@
         </select>
       </div>
       <div class="col-6 col-md-3">
-        <label class="form-label small fw-bold text-muted text-uppercase tracking-tighter">Muscle</label>
-        <select v-model="localFilters.muscle" class="form-select rounded-pill py-2" @change="applyFilters">
+        <label for="filterMuscle" class="form-label small fw-bold text-muted text-uppercase tracking-tighter">Muscle</label>
+        <select id="filterMuscle" v-model="localFilters.muscle" class="form-select rounded-pill py-2" @change="applyFilters">
           <option value="">All Muscles</option>
           <option v-for="m in muscles" :key="m" :value="m" class="text-capitalize">{{ m }}</option>
         </select>
@@ -109,7 +118,7 @@
     </div>
 
     <!-- Workout List -->
-    <div class="row g-4">
+    <TransitionGroup name="workout-list" tag="div" class="row g-4">
       <div v-for="w in filteredUserWorkouts" :key="w.id" class="col-12">
         <div class="card border-0 shadow-sm hover-lift">
           <div class="card-body p-4 p-lg-5">
@@ -120,7 +129,7 @@
                    <span class="text-muted small">•</span>
                    <time class="text-muted small fw-medium">{{ w.date }}</time>
                 </div>
-                <h3 class="fw-bold text-dark text-capitalize mb-0">{{ w.exercise }}</h3>
+                <h3 class="fw-bold text-dark text-capitalize mb-0" v-highlight="'#e8f5e9'">{{ w.exercise }}</h3>
               </div>
               <div class="d-flex gap-2">
                 <button @click="startEdit(w)" class="btn btn-light btn-sm px-3 rounded-pill border fw-bold text-primary">Edit</button>
@@ -168,7 +177,7 @@
         <h4 class="fw-bold text-dark">No records found</h4>
         <p class="text-muted">Your training log is currently empty. Start your journey today!</p>
       </div>
-    </div>
+    </TransitionGroup>
   </div>
 </template>
 
@@ -276,5 +285,20 @@ onMounted(() => {
 
 .font-italic {
   font-style: italic;
+}
+
+.workout-list-enter-active,
+.workout-list-leave-active {
+  transition: all 0.35s ease;
+}
+
+.workout-list-enter-from {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.workout-list-leave-to {
+  opacity: 0;
+  transform: translateX(20px);
 }
 </style>

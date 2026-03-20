@@ -50,14 +50,13 @@
               </RouterLink>
             </div>
 
-            <div v-if="recentWorkouts.length">
-              <div v-for="w in recentWorkouts" :key="w.id" class="border-bottom py-3 d-flex justify-content-between align-items-center workout-item">
-                <div>
-                  <div class="fw-bold text-dark text-capitalize">{{ w.exercise }}</div>
-                  <div class="text-muted small">{{ w.date }} — {{ w.sets }}x{{ w.reps }} <span class="ms-2 badge bg-light text-muted border-0">{{ w.weight }}kg</span></div>
-                </div>
-                <span class="badge bg-primary-light text-primary px-3 py-2 rounded-pill text-capitalize">{{ w.muscle }}</span>
-              </div>
+            <div v-if="recentWorkouts.length" class="d-flex flex-column gap-2">
+              <WorkoutCard 
+                v-for="w in recentWorkouts" 
+                :key="w.id" 
+                :workout="w" 
+                :showActions="false"
+              />
             </div>
             <div v-else class="glass p-5 rounded-4 text-center border-0">
               <p class="mb-4 text-muted">Ready to start your journey?</p>
@@ -69,6 +68,16 @@
         </div>
       </div>
     </div>
+
+    <!-- Quick Actions -->
+    <div class="d-flex flex-wrap gap-3">
+      <RouterLink to="/workouts" class="btn btn-primary px-4 py-2 rounded-pill fw-bold shadow-sm">
+        Log Workout
+      </RouterLink>
+      <RouterLink to="/exercises" class="btn btn-outline-primary px-4 py-2 rounded-pill fw-bold">
+        Browse Exercises
+      </RouterLink>
+    </div>
   </div>
 </template>
 
@@ -77,6 +86,7 @@ import { computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useAuthStore } from '../stores/authStore'
 import { useWorkoutStore } from '../stores/workoutStore'
+import WorkoutCard from '../components/WorkoutCard.vue'
 
 const auth = useAuthStore()
 const workoutStore = useWorkoutStore()
@@ -92,8 +102,8 @@ const recentWorkouts = computed(() => [...filteredUserWorkouts.value].reverse().
 const stats = computed(() => [
   { label: 'Workouts', value: filteredUserWorkouts.value.length, colorClass: 'bg-primary' },
   { label: 'Total Sets', value: totalSets.value, colorClass: 'bg-info' },
-  { label: 'Total Reps', value: totalReps.value, colorClass: 'bg-accent' },
-  { label: 'Muscles Hit', value: uniqueMuscles.value, colorClass: 'bg-dark' }
+  { label: 'Total Reps', value: totalReps.value, colorClass: 'bg-warning' },
+  { label: 'Muscles Hit', value: uniqueMuscles.value, colorClass: 'bg-success' }
 ])
 </script>
 
