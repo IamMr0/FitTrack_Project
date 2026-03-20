@@ -144,7 +144,7 @@ const error = ref('')
 const success = ref(false)
 const loading = ref(false)
 
-const handleRegister = () => {
+const handleRegister = async () => {
   // Simple validation reset
   Object.keys(v$).forEach(key => v$[key].$error = false)
   error.value = ''
@@ -160,7 +160,7 @@ const handleRegister = () => {
   if (!isValid) return
 
   loading.value = true
-  const res = auth.register(form.firstName, form.lastName, form.email, form.password)
+  const res = await auth.register(form.firstName, form.lastName, form.email, form.password)
   
   if (res.success) {
     success.value = true

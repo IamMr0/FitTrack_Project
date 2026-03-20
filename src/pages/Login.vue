@@ -81,9 +81,9 @@ const form = reactive({
 
 const error = ref('')
 
-const handleLogin = () => {
+const handleLogin = async () => {
   error.value = ''
-  const res = auth.login(form.email, form.password)
+  const res = await auth.login(form.email, form.password)
   
   if (res.success) {
     router.push('/dashboard')
