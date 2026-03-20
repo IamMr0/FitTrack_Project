@@ -1,11 +1,13 @@
 
 const BASE_URL = 'https://exercisedb.p.rapidapi.com'
+const API_KEY = import.meta.env.VITE_RAPIDAPI_KEY
+const API_HOST = import.meta.env.VITE_RAPIDAPI_HOST
 const HEADERS = {
-  'X-RapidAPI-Key': import.meta.env.VITE_RAPIDAPI_KEY,
-  'X-RapidAPI-Host': import.meta.env.VITE_RAPIDAPI_HOST
+  'X-RapidAPI-Key': API_KEY,
+  'X-RapidAPI-Host': API_HOST
 }
 
-const isApiKeyMissing = !import.meta.env.VITE_RAPIDAPI_KEY || import.meta.env.VITE_RAPIDAPI_KEY === 'your_rapidapi_key_here'
+const isApiKeyMissing = !API_KEY || API_KEY === 'your_rapidapi_key_here'
 
 export async function fetchExercises(limit = 1500, offset = 0) {
   if (isApiKeyMissing) {
@@ -49,16 +51,29 @@ export async function fetchBodyPartList() {
   }
 }
 
-export function getExerciseGifUrl(exerciseId) {
-  if (!import.meta.env.VITE_RAPIDAPI_KEY) {
-    return `https://placehold.co/180x180?text=GIF+Preview+${exerciseId}`
+/**
+ * Returns the GIF image as a local Blob URL by fetching it with proper auth headers.
+ * This is required because the RapidAPI /image endpoint sends Cross-Origin-Resource-Policy: same-origin,
+ * which blocks direct <img src="..."> loading from a browser.
+ */
+export async function fetchExerciseGif(exerciseId) {
+  if (isApiKeyMissing) return null
+
+  const url = `${BASE_URL}/image?exerciseId=${exerciseId}&resolution=180`
+  try {
+    const response = await fetch(url, { headers: HEADERS })
+    if (!response.ok) return null
+    const blob = await response.blob()
+    return URL.createObjectURL(blob)
+  } catch (error) {
+    console.error('fetchExerciseGif error:', error)
+    return null
   }
-  return `https://exercisedb.p.rapidapi.com/image?exerciseId=${exerciseId}&resolution=180&rapidapi-key=${import.meta.env.VITE_RAPIDAPI_KEY}`
 }
 
 export default {
   fetchExercises,
   fetchExercisesByBodyPart,
   fetchBodyPartList,
-  getExerciseGifUrl
+  fetchExerciseGif
 }

@@ -129,11 +129,16 @@
               <div
                 class="col-12 col-md-5 bg-white text-center p-4 d-flex align-items-center justify-content-center"
               >
+                <div v-if="modalGifLoading" class="text-muted">
+                  <div class="spinner-border text-primary" role="status"></div>
+                </div>
                 <img
-                  :src="getExerciseGifUrl(selectedExercise.id)"
+                  v-else-if="modalGifSrc"
+                  :src="modalGifSrc"
                   :alt="selectedExercise.name"
                   class="img-fluid rounded-4"
                 />
+                <div v-else class="text-muted display-4 opacity-25">💪</div>
               </div>
               <div class="col-12 col-md-7 p-4 p-lg-5">
                 <div
@@ -238,13 +243,13 @@
 </style>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, computed, watch } from "vue";
 import ExerciseCard from "../components/ExerciseCard.vue";
 import {
   fetchExercises,
   fetchExercisesByBodyPart,
   fetchBodyPartList,
-  getExerciseGifUrl,
+  fetchExerciseGif,
 } from "../api/exerciseApi";
 import { usePagination } from "../composables/usePagination";
 
@@ -277,10 +282,32 @@ const { currentPage, paginated, totalPages, goTo } = usePagination(
 );
 
 const selectedExercise = ref(null);
+const modalGifSrc = ref(null);
+const modalGifLoading = ref(false);
+let modalGifObjectUrl = null;
 
 const showDetails = (ex) => {
   selectedExercise.value = ex;
 };
+
+// Watch selectedExercise to fetch the GIF whenever user opens a detail view
+watch(selectedExercise, async (ex) => {
+  // cleanup previous
+  if (modalGifObjectUrl) {
+    URL.revokeObjectURL(modalGifObjectUrl);
+    modalGifObjectUrl = null;
+  }
+  modalGifSrc.value = null;
+  if (!ex?.id) return;
+  modalGifLoading.value = true;
+  try {
+    const url = await fetchExerciseGif(ex.id);
+    modalGifObjectUrl = url;
+    modalGifSrc.value = url;
+  } finally {
+    modalGifLoading.value = false;
+  }
+});
 
 const visiblePages = computed(() => {
   const pages = [];
