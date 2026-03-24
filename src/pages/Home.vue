@@ -44,7 +44,7 @@
           <div class="col-12 col-md-6 order-1 order-md-2">
             <div class="position-relative">
               <img 
-                src="../assets/images/hero.jpg" 
+                src="../assets/images/fitness.png" 
                 alt="Fitness training" 
                 class="img-fluid rounded-4 shadow-2xl"
                 @error="handleImageError"
@@ -112,14 +112,14 @@ const activities = [
     title: 'Outdoor Training',
     desc: 'Discover the best outdoor workouts to keep your routine fresh and exciting.',
     tag: 'Adventure',
-    img: '../assets/images/mountain.jpg',
+    img: new URL('../assets/images/outdoor.png', import.meta.url).href,
     link: '/exercises'
   },
   {
-    title: 'Water Sports',
-    desc: 'Improve your cardio and strength with our curated list of aquatic activities.',
+    title: 'Indoor Training',
+    desc: 'Improve your cardio and strength with our curated list of indoor activities.',
     tag: 'Cardio',
-    img: '../assets/images/ocean.jpg',
+    img: new URL('../assets/images/indoor.png', import.meta.url).href,
     link: '/exercises'
   }
 ]

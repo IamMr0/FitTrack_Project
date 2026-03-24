@@ -76,14 +76,14 @@
           <div class="overflow-hidden rounded-4 shadow-sm transition-all">
             <img 
               v-if="environment === 'mountain'" 
-              src="../assets/images/mountain.jpg" 
+              src="../assets/images/outdoor.png" 
               alt="Mountain training" 
               class="img-fluid fade-in"
               @error="handleImageError"
             >
             <img 
               v-if="environment === 'ocean'" 
-              src="../assets/images/ocean.jpg" 
+              src="../assets/images/indoor.png" 
               alt="Ocean training" 
               class="img-fluid fade-in"
               @error="handleImageError"
