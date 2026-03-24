@@ -18,8 +18,8 @@
     <!-- Filter Bar -->
     <div class="glass p-4 rounded-4 mb-5 shadow-sm">
       <div class="row g-4">
-        <div class="col-12 col-md-6">
-          <label for="exerciseSearch" class="form-label small fw-bold text-uppercase tracking-wider">Search</label>
+        <div class="col-12 col-md-4">
+          <label for="exerciseSearch" class="form-label small fw-bold text-uppercase tracking-wider">Search Name</label>
           <div class="input-group">
             <span class="input-group-text bg-white border-end-0 rounded-start-3">🔍</span>
             <input
@@ -27,22 +27,36 @@
               v-model="search"
               type="text"
               class="form-control border-start-0 rounded-end-3 py-2"
-              placeholder="Search by name, equipment, or target..."
-              @input="resetAndFetch"
+              placeholder="Search by exercise name..."
             />
           </div>
         </div>
-        <div class="col-12 col-md-6">
-          <label for="exerciseBodyPart" class="form-label small fw-bold text-uppercase tracking-wider">Filter by Body Part</label>
+        <div class="col-12 col-md-4">
+          <label for="filterType" class="form-label small fw-bold text-uppercase tracking-wider">Filter Type</label>
           <select
-            id="exerciseBodyPart"
-            v-model="selectedBodyPart"
+            id="filterType"
+            v-model="filterType"
             class="form-select py-2 rounded-3"
-            @change="resetAndFetch"
+            @change="onFilterTypeChange"
           >
-            <option value="">All Body Parts</option>
-            <option v-for="part in bodyParts" :key="part" :value="part">
-              {{ part }}
+            <option value="all">All</option>
+            <option value="bodyPart">Body Part</option>
+            <option value="equipment">Equipment</option>
+            <option value="target">Target</option>
+          </select>
+        </div>
+        <div class="col-12 col-md-4" v-if="filterType !== 'all'">
+          <label for="filterValue" class="form-label small fw-bold text-uppercase tracking-wider">{{ filterTypeLabel }}</label>
+          <select
+            id="filterValue"
+            v-model="filterValue"
+            class="form-select py-2 rounded-3"
+            @change="onFilterValueChange"
+            :disabled="filterOptionsLoading"
+          >
+            <option value="">All {{ filterTypeLabel }}s</option>
+            <option v-for="opt in filterOptions" :key="opt" :value="opt">
+              {{ opt }}
             </option>
           </select>
         </div>
@@ -78,7 +92,7 @@
         <div class="display-1 text-muted mb-3">🔍</div>
         <h4 class="fw-bold">No results found</h4>
         <p class="text-muted">Try adjusting your search or category filters.</p>
-        <button @click="search = ''; selectedBodyPart = ''; loadData()" class="btn btn-link text-primary fw-bold text-decoration-none">
+        <button @click="clearFilters" class="btn btn-link text-primary fw-bold text-decoration-none">
           Clear all filters
         </button>
       </div>
@@ -248,31 +262,69 @@ import ExerciseCard from "../components/ExerciseCard.vue";
 import {
   fetchExercises,
   fetchExercisesByBodyPart,
+  fetchExercisesByEquipment,
+  fetchExercisesByTarget,
   fetchBodyPartList,
+  fetchEquipmentList,
+  fetchTargetList,
   fetchExerciseGif,
 } from "../api/exerciseApi";
 import { usePagination } from "../composables/usePagination";
 
 const exercises = ref([]);
-const bodyParts = ref([]);
 const loading = ref(true);
 const search = ref("");
-const selectedBodyPart = ref("");
 const isOffline = ref(
   !import.meta.env.VITE_RAPIDAPI_KEY ||
     import.meta.env.VITE_RAPIDAPI_KEY === "your_rapidapi_key_here",
 );
 
+// Cascading filter state
+const filterType = ref("all"); // 'all' | 'bodyPart' | 'equipment' | 'target'
+const filterValue = ref("");
+const filterOptions = ref([]);
+const filterOptionsLoading = ref(false);
+
+const filterTypeLabel = computed(() => {
+  const labels = { bodyPart: 'Body Part', equipment: 'Equipment', target: 'Target' };
+  return labels[filterType.value] || '';
+});
+
+// When filter type changes, fetch the corresponding options list
+const onFilterTypeChange = async () => {
+  filterValue.value = "";
+  filterOptions.value = [];
+  if (filterType.value === "all") {
+    await loadExercises();
+    return;
+  }
+  filterOptionsLoading.value = true;
+  try {
+    if (filterType.value === "bodyPart") {
+      filterOptions.value = await fetchBodyPartList();
+    } else if (filterType.value === "equipment") {
+      filterOptions.value = await fetchEquipmentList();
+    } else if (filterType.value === "target") {
+      filterOptions.value = await fetchTargetList();
+    }
+  } finally {
+    filterOptionsLoading.value = false;
+  }
+  // Load all exercises (unfiltered by value) when type changes
+  await loadExercises();
+};
+
+// When filter value changes, fetch exercises filtered by that value
+const onFilterValueChange = async () => {
+  goTo(1);
+  await loadExercises();
+};
+
+// Name search is purely client-side filtering
 const filteredExercises = computed(() => {
   return exercises.value.filter((ex) => {
     const term = search.value.toLowerCase();
-    return (
-      !term ||
-      ex.name.toLowerCase().includes(term) ||
-      ex.target.toLowerCase().includes(term) ||
-      ex.equipment.toLowerCase().includes(term) ||
-      ex.bodyPart.toLowerCase().includes(term)
-    );
+    return !term || ex.name.toLowerCase().includes(term);
   });
 });
 
@@ -292,7 +344,6 @@ const showDetails = (ex) => {
 
 // Watch selectedExercise to fetch the GIF whenever user opens a detail view
 watch(selectedExercise, async (ex) => {
-  // cleanup previous
   if (modalGifObjectUrl) {
     URL.revokeObjectURL(modalGifObjectUrl);
     modalGifObjectUrl = null;
@@ -317,17 +368,19 @@ const visiblePages = computed(() => {
   return pages;
 });
 
-const loadData = async () => {
+// Core data loader — uses filter type & value to decide which API to call
+const loadExercises = async () => {
   loading.value = true;
   try {
-    const [exData, partData] = await Promise.all([
-      selectedBodyPart.value
-        ? fetchExercisesByBodyPart(selectedBodyPart.value)
-        : fetchExercises(),
-      fetchBodyPartList(),
-    ]);
-    exercises.value = exData;
-    bodyParts.value = partData;
+    if (filterType.value === "all" || !filterValue.value) {
+      exercises.value = await fetchExercises();
+    } else if (filterType.value === "bodyPart") {
+      exercises.value = await fetchExercisesByBodyPart(filterValue.value);
+    } else if (filterType.value === "equipment") {
+      exercises.value = await fetchExercisesByEquipment(filterValue.value);
+    } else if (filterType.value === "target") {
+      exercises.value = await fetchExercisesByTarget(filterValue.value);
+    }
   } catch (error) {
     console.error("Error loading exercises:", error);
   } finally {
@@ -335,10 +388,14 @@ const loadData = async () => {
   }
 };
 
-const resetAndFetch = () => {
+const clearFilters = () => {
+  search.value = "";
+  filterType.value = "all";
+  filterValue.value = "";
+  filterOptions.value = [];
   goTo(1);
-  loadData();
+  loadExercises();
 };
 
-onMounted(loadData);
+onMounted(loadExercises);
 </script>

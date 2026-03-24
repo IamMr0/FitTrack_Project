@@ -51,6 +51,58 @@ export async function fetchBodyPartList() {
   }
 }
 
+export async function fetchEquipmentList() {
+  if (isApiKeyMissing) return []
+
+  try {
+    const response = await fetch(`${BASE_URL}/exercises/equipmentList`, { headers: HEADERS })
+    if (!response.ok) throw new Error('API fetch failed')
+    return await response.json()
+  } catch (error) {
+    console.error('fetchEquipmentList error:', error)
+    return []
+  }
+}
+
+export async function fetchExercisesByEquipment(equipment, limit = 1500, offset = 0) {
+  if (isApiKeyMissing) return []
+
+  try {
+    const response = await fetch(`${BASE_URL}/exercises/equipment/${equipment}?limit=${limit}&offset=${offset}`, { headers: HEADERS })
+    if (!response.ok) throw new Error('API fetch failed')
+    return await response.json()
+  } catch (error) {
+    console.error('fetchExercisesByEquipment error:', error)
+    return []
+  }
+}
+
+export async function fetchTargetList() {
+  if (isApiKeyMissing) return []
+
+  try {
+    const response = await fetch(`${BASE_URL}/exercises/targetList`, { headers: HEADERS })
+    if (!response.ok) throw new Error('API fetch failed')
+    return await response.json()
+  } catch (error) {
+    console.error('fetchTargetList error:', error)
+    return []
+  }
+}
+
+export async function fetchExercisesByTarget(target, limit = 1500, offset = 0) {
+  if (isApiKeyMissing) return []
+
+  try {
+    const response = await fetch(`${BASE_URL}/exercises/target/${target}?limit=${limit}&offset=${offset}`, { headers: HEADERS })
+    if (!response.ok) throw new Error('API fetch failed')
+    return await response.json()
+  } catch (error) {
+    console.error('fetchExercisesByTarget error:', error)
+    return []
+  }
+}
+
 /**
  * Returns the GIF image as a local Blob URL by fetching it with proper auth headers.
  * This is required because the RapidAPI /image endpoint sends Cross-Origin-Resource-Policy: same-origin,
