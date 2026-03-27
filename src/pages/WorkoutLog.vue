@@ -18,17 +18,50 @@
       <form @submit.prevent="handleSubmit">
         <div class="row g-4">
           <div class="col-12 col-md-6">
-            <label for="workoutExercise" class="form-label small fw-bold text-uppercase tracking-wider">Exercise Name</label>
-            <input 
-              id="workoutExercise" 
-              v-focus 
-              v-model="form.exercise" 
-              type="text" 
-              class="form-control py-2 rounded-3" 
-              placeholder="e.g. Bench Press" 
+          <label for="workoutExercise" class="form-label small fw-bold text-uppercase tracking-wider">Exercise Name</label>
+          <div class="position-relative">
+            <input
+              id="workoutExercise"
+              v-focus
+              v-model="form.exercise"
+              type="text"
+              class="form-control py-2 rounded-3"
+              placeholder="e.g. Bench Press"
               required
+              autocomplete="off"
               aria-describedby="formInstructions"
+              @input="onExerciseInput"
+              @keydown.escape="clearSuggestions"
+              @keydown.down.prevent="highlightNext"
+              @keydown.up.prevent="highlightPrev"
+              @keydown.enter.prevent="selectHighlighted"
+              @blur="hideSuggestionsDelayed"
             >
+            <!-- Autocomplete dropdown -->
+            <ul
+              v-if="suggestions.length > 0"
+              class="autocomplete-dropdown list-unstyled mb-0 position-absolute w-100 bg-white border rounded-3 shadow-sm"
+              style="z-index: 1050; top: calc(100% + 4px); max-height: 220px; overflow-y: auto;"
+              role="listbox"
+              aria-label="Exercise suggestions"
+            >
+              <li
+                v-for="(sug, idx) in suggestions"
+                :key="sug.id"
+                @mousedown.prevent="selectSuggestion(sug)"
+                class="autocomplete-item px-3 py-2 text-capitalize small fw-medium"
+                :class="{ 'bg-primary text-white': idx === highlightIndex }"
+                role="option"
+              >
+                {{ sug.name }}
+                <span class="ms-2 opacity-50" style="font-size: 0.7rem; font-weight: 400;">{{ sug.bodyPart }}</span>
+              </li>
+            </ul>
+            <!-- Loading spinner inside field -->
+            <div v-if="suggestionsLoading" class="position-absolute top-50 end-0 translate-middle-y pe-3">
+              <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+            </div>
+          </div>
           </div>
           <div class="col-6 col-md-3">
             <label for="workoutDate" class="form-label small fw-bold text-uppercase tracking-wider">Date</label>
@@ -185,6 +218,7 @@
 import { reactive, ref, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useWorkoutStore } from '../stores/workoutStore'
+import { fetchExercisesByName } from '../api/exerciseApi'
 
 const workoutStore = useWorkoutStore()
 const { filteredUserWorkouts } = storeToRefs(workoutStore)
@@ -204,6 +238,66 @@ const initialForm = {
 
 const form = reactive({ ...initialForm })
 const editingId = ref(null)
+
+// --- Autocomplete state ---
+const suggestions = ref([])
+const suggestionsLoading = ref(false)
+const highlightIndex = ref(-1)
+let debounceTimer = null
+
+const onExerciseInput = () => {
+  highlightIndex.value = -1
+  clearTimeout(debounceTimer)
+  if (!form.exercise.trim()) {
+    suggestions.value = []
+    return
+  }
+  suggestionsLoading.value = true
+  debounceTimer = setTimeout(async () => {
+    suggestions.value = await fetchExercisesByName(form.exercise, 5)
+    suggestionsLoading.value = false
+  }, 300)
+}
+
+const selectSuggestion = (sug) => {
+  form.exercise = sug.name
+  if (sug.bodyPart) {
+    // Auto-set muscle group if it matches our options
+    const muscleMap = {
+      waist: 'waist', back: 'back', chest: 'chest',
+      shoulders: 'shoulders', 'upper arms': 'upper arms',
+      'lower arms': 'upper arms', 'upper legs': 'upper legs',
+      'lower legs': 'lower legs', cardio: 'cardio'
+    }
+    const matched = muscleMap[sug.bodyPart.toLowerCase()]
+    if (matched) form.muscle = matched
+  }
+  suggestions.value = []
+  highlightIndex.value = -1
+}
+
+const clearSuggestions = () => {
+  suggestions.value = []
+  highlightIndex.value = -1
+}
+
+const hideSuggestionsDelayed = () => {
+  setTimeout(() => { suggestions.value = [] }, 150)
+}
+
+const highlightNext = () => {
+  if (highlightIndex.value < suggestions.value.length - 1) highlightIndex.value++
+}
+
+const highlightPrev = () => {
+  if (highlightIndex.value > 0) highlightIndex.value--
+}
+
+const selectHighlighted = () => {
+  if (highlightIndex.value >= 0 && suggestions.value[highlightIndex.value]) {
+    selectSuggestion(suggestions.value[highlightIndex.value])
+  }
+}
 
 const localFilters = reactive({
   search: '',
@@ -285,6 +379,15 @@ onMounted(() => {
 
 .font-italic {
   font-style: italic;
+}
+
+.autocomplete-item {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+.autocomplete-item:hover {
+  background-color: var(--primary-light);
+  color: var(--primary);
 }
 
 .workout-list-enter-active,

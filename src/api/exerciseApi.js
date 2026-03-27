@@ -25,6 +25,20 @@ export async function fetchExercises(limit = 1500, offset = 0) {
   }
 }
 
+export async function fetchExercisesByName(name, limit = 5) {
+  if (isApiKeyMissing || !name.trim()) return []
+
+  try {
+    const encoded = encodeURIComponent(name.trim().toLowerCase())
+    const response = await fetch(`${BASE_URL}/exercises/name/${encoded}?limit=${limit}&offset=0`, { headers: HEADERS })
+    if (!response.ok) throw new Error('API fetch failed')
+    return await response.json()
+  } catch (error) {
+    console.error('fetchExercisesByName error:', error)
+    return []
+  }
+}
+
 export async function fetchExercisesByBodyPart(bodyPart, limit = 1500, offset = 0) {
   if (isApiKeyMissing) return []
 
