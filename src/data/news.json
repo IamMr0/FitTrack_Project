@@ -4,6 +4,7 @@
     "date": "2025-01-05",
     "title": "The Science of Progressive Overload",
     "content": "Progressive overload is the gradual increase of stress placed on the body during exercise. Studies confirm it is the single most important factor in building strength and muscle mass over time.",
+    "fullArticle": "Progressive overload is the foundation of all physical adaptation. When you lift weights, you create micro-tears in your muscle fibers. Your body repairs these tears thicker and stronger, but only if the stimulus is greater than what it's used to. This means you must continually challenge your body by increasing the weight, the number of repetitions, or the frequency of your training sessions. Without progressive overload, your muscles will quickly adapt to the current stress level, and your progress will plateau. To implement this effectively, keep a detailed workout log and aim to improve by just 1-2% each week.",
     "category": "Strength"
   },
   {
@@ -11,6 +12,7 @@
     "date": "2025-01-12",
     "title": "Why You Should Prioritise Sleep for Recovery",
     "content": "Sleep is when the body repairs muscle tissue and consolidates motor skills. Athletes who sleep less than 7 hours show significantly slower strength gains and higher injury rates.",
+    "fullArticle": "While training provides the stimulus for growth, actual muscle repair and strengthening occur while you sleep. During deep sleep (NREM stage 3), the body releases the majority of its daily human growth hormone (HGH). Furthermore, sleep deprivation drastically increases cortisol levels, a catabolic hormone that breaks down muscle tissue. Studies consistently show that athletes who prioritise 8-9 hours of quality sleep experience faster reaction times, increased muscular endurance, and a substantially lower risk of injury compared to those getting 6 hours or less.",
     "category": "Recovery"
   },
   {
@@ -18,6 +20,7 @@
     "date": "2025-01-20",
     "title": "Nutrition Timing: Does It Matter?",
     "content": "Research on nutrient timing suggests consuming protein within two hours of training can improve muscle protein synthesis. Total daily intake remains the most critical factor.",
+    "fullArticle": "The concept of the 'anabolic window'—the idea that you must consume protein within 30 minutes of working out—has been largely debunked by modern sports science. While nutrient timing does play a role, its importance is overshadowed by your total daily caloric and macronutrient intake. As long as you consume adequate protein (roughly 1.6g to 2.2g per kilogram of body weight) spread across 3-5 meals throughout the day, your body will have the necessary building blocks for repair. The pre-workout meal is actually more time-sensitive than the post-workout meal, as it dictates your energy levels during the session.",
     "category": "Nutrition"
   },
   {
@@ -25,6 +28,7 @@
     "date": "2025-02-03",
     "title": "Zone 2 Cardio Explained",
     "content": "Zone 2 training targets 60–70% of maximum heart rate. It builds aerobic base, improves fat oxidation, and is increasingly popular among endurance athletes.",
+    "fullArticle": "Zone 2 cardio is often described as working at a 'conversational pace.' By keeping your heart rate at 60-70% of its maximum, you specifically train your body's mitochondrial efficiency and fat oxidation pathways. Unlike high-intensity interval training (HIIT), which relies heavily on carbohydrates for quick energy, Zone 2 forces your body to become highly efficient at burning fat. This not only improves endurance performance but also significantly reduces the fatigue placed on your central nervous system, meaning you can recover faster and integrate it easily with heavy strength training routines.",
     "category": "Cardio"
   },
   {
@@ -32,6 +36,7 @@
     "date": "2025-02-11",
     "title": "The Benefits of Cold Water Immersion",
     "content": "Cold water immersion after intense training can reduce delayed onset muscle soreness. However, it may blunt hypertrophy when used immediately post-strength session.",
+    "fullArticle": "Ice baths and cold water immersion (CWI) have exploded in popularity for recovery. CWI works by constricting blood vessels, which aggressively flushes metabolic waste products like lactic acid from muscle tissues while reducing acute inflammation. This leads to a dramatic reduction in perceived muscle soreness. However, recent studies present a caveat: the inflammation caused by strength training is precisely what signals the body to build new muscle. Unnecessarily suppressing this inflammation with ice immediately after a hypertrophy workout can actually blunt long-term muscle growth. Use CWI strategically after endurance events or competitions, not after routine gym sessions.",
     "category": "Recovery"
   },
   {
@@ -39,6 +44,7 @@
     "date": "2025-02-18",
     "title": "How to Structure a Push Pull Legs Routine",
     "content": "Push Pull Legs splits training into three movement patterns. This allows each muscle group 48–72 hours of recovery while maintaining high weekly training volume.",
+    "fullArticle": "The Push/Pull/Legs (PPL) split is renowned for its elegant simplicity and effectiveness. A 'Push' session targets the chest, shoulders, and triceps (e.g., bench press, overhead press). A 'Pull' day focuses on the back and biceps (e.g., deadlifts, rows, pull-ups). The 'Legs' day handles all lower body musculature (e.g., squats, lunges, calf raises). Running this sequence twice a week (PPLPPL-Rest) hits every major muscle group twice, which is the scientifically proven optimal frequency for muscle hypertrophy. This structure inherently prevents overlap and ensures that secondary mover muscles are completely rested before their primary days.",
     "category": "Strength"
   },
   {
@@ -46,6 +52,7 @@
     "date": "2025-03-01",
     "title": "Creatine: What the Research Says",
     "content": "Creatine monohydrate remains the most studied sports supplement. It increases phosphocreatine stores, directly improving performance in short high-intensity efforts.",
+    "fullArticle": "With over 500 peer-reviewed studies backing its efficacy, Creatine Monohydrate is the undisputed king of sports supplements. It works by saturating your muscles with phosphocreatine. During rapid, high-intensity exertion (like lifting a heavy weight or sprinting), your body uses this stored phosphocreatine to rapidly produce ATP, the basic currency of cellular energy. Supplementing with just 3-5 grams per day has been conclusively shown to increase power output by 5-15%, accelerate muscle growth by drawing water into the muscle cells, and even offer potential neuroprotective benefits for the brain.",
     "category": "Nutrition"
   },
   {
@@ -53,6 +60,7 @@
     "date": "2025-03-10",
     "title": "Mobility Work for Lifters",
     "content": "Improving hip and thoracic mobility unlocks deeper squats and safer pressing mechanics. Daily mobility practice of 10–15 minutes significantly reduces injury risk.",
+    "fullArticle": "Many lifters confuse flexibility (passive stretching) with mobility (active control through a range of motion). While static stretching can temporarily lengthen a muscle, true mobility work trains the nervous system to exert force safely at end ranges. For strength athletes, restrictions in the thoracic spine (upper back) routinely cause shoulder pain during overhead pressing, while limited ankle and hip mobility invariably lead to lower back rounding (the 'butt wink') during deep squats. Incorporating dynamic mobility drills, such as 90/90s for hips and thoracic extensions, before grabbing a barbell will yield immediate improvements in technique and long-term joint health.",
     "category": "Flexibility"
   },
   {
@@ -60,6 +68,7 @@
     "date": "2025-03-18",
     "title": "The Truth About HIIT Training",
     "content": "High-intensity interval training burns significant calories in short sessions but requires adequate recovery. Combining HIIT with Zone 2 work yields the best cardiovascular improvements.",
+    "fullArticle": "HIIT (High-Intensity Interval Training) offers incredible metabolic benefits, severely stimulating the cardiovascular system to improve VO2 max in just 15-20 minute sessions. It also triggers the 'afterburn' effect (EPOC), meaning you continue to burn calories at an elevated rate hours after the workout ends. However, the fitness industry often oversells HIIT. True high-intensity work is incredibly taxing on the central nervous system. Doing HIIT more than 2-3 times a week drastically increases the risk of overtraining syndrome. The most elite athletes build massive aerobic bases primarily through low-intensity (Zone 2) training, reserving true HIIT for occasional, concentrated performance spikes.",
     "category": "Cardio"
   },
   {
@@ -67,6 +76,7 @@
     "date": "2025-03-25",
     "title": "Building Habit Loops for Consistent Training",
     "content": "Attaching workouts to existing routines greatly improves adherence. Consistent cues and rewards are more powerful than motivation alone.",
+    "fullArticle": "Motivation is a finite resource; it relies on emotion and willpower, both of which fluctuate wildly based on daily stress and fatigue. Consistency in fitness is rarely achieved through motivation; it is built on habit loops. A habit loop consists of a Cue, a Routine, and a Reward. Instead of waiting to 'feel like' working out, engineer a cue. For example, leaving your gym shoes on your pillow in the morning, or heading to the gym immediately after your drive home from work. Pair this with a clear routine (your planned workout program) and an immediate reward (a post-workout smoothie or a hot shower). Over time, the neurological friction disappears, and training becomes automatic.",
     "category": "Mindset"
   },
   {
@@ -74,6 +84,7 @@
     "date": "2025-04-02",
     "title": "Foam Rolling: Useful or Overrated?",
     "content": "Foam rolling increases short-term range of motion and reduces perceived soreness. It is a useful warm-up tool before intense sessions.",
+    "fullArticle": "Self-myofascial release (SMR), commonly known as foam rolling, is widely misunderstood. Despite popular belief, rolling over a muscle does not 'break up' scar tissue or physically lengthen the fascia—that would require thousands of pounds of force. Instead, foam rolling provides a neurological input to your brain. It alters pain perception and stimulates mechanoreceptors, which temporarily command the surrounding muscles to relax. This makes foam rolling an excellent tool for pre-workout warmups to quickly increase your range of motion without sacrificing power output, but it is not a cure-all for chronic, structural injuries.",
     "category": "Recovery"
   },
   {
@@ -81,6 +92,7 @@
     "date": "2025-04-09",
     "title": "Protein Requirements for Muscle Growth",
     "content": "Current evidence suggests 1.6–2.2g of protein per kg of bodyweight is optimal for muscle hypertrophy. Spreading intake across four to five meals maximises synthesis.",
+    "fullArticle": "The science surrounding protein requirements is clear, yet often exaggerated by supplement marketing. Meta-analyses of resistance-trained individuals show no significant benefit to consuming more than 1.6 to 2.2 grams of protein per kilogram of body weight per day (roughly 0.7 to 1 gram per pound). What is often overlooked, however, is the concept of a 'muscle protein synthesis (MPS) threshold.' To optimally stimulate MPS, you need a sufficient dose of the amino acid leucine (about 3g, usually found in 25-30g of high-quality protein). Because your body cannot store excess protein for later MPS use, spacing these 30g 'pulses' evenly across 4 to 5 meals throughout the day yields better muscle growth than cramming your entire daily requirement into one massive dinner.",
     "category": "Nutrition"
   },
   {
@@ -88,6 +100,7 @@
     "date": "2025-04-15",
     "title": "Training to Failure: Pros and Cons",
     "content": "Training to muscular failure can maximise motor unit recruitment but increases fatigue and recovery time. Most experts recommend leaving 1–3 reps in reserve.",
+    "fullArticle": "Taking a set to absolute concentric failure ensures that you have recruited all available motor units, providing a potent stimulus for muscle growth. However, this comes at a severe cost: a disproportionate spike in central nervous system fatigue. Studies indicate that stopping a set when you have 1 to 3 'Reps in Reserve' (RIR) provides roughly 90% of the hypertrophic benefit with a fraction of the systemic fatigue. This allows you to accumulate much more total training volume over the course of a week. Therefore, failure should be used selectively—reserve it for smaller, isolation exercises (like bicep curls) and the final week of a training block, rather than applying it to heavy compound lifts like deadlifts every session.",
     "category": "Strength"
   },
   {
@@ -95,6 +108,7 @@
     "date": "2025-04-22",
     "title": "Running Economy and How to Improve It",
     "content": "Running economy refers to oxygen cost at a given pace. Strength training, plyometrics, and proper running form all contribute to measurable improvements.",
+    "fullArticle": "While VO2 max essentially measures the size of your aerobic 'engine,' running economy measures how efficiently your body uses that engine's fuel. A runner with poor economy wastes energy through vertical oscillation (bouncing up and down), braking forces, or a slow cadence. Improving your running economy translates to running at the same speed while utilizing significantly less oxygen. The most effective ways to boost running economy don't involve more running. Heavy lower-body resistance training and plyometrics (bounding, box jumps) increase leg stiffness. In the biomechanical sense, 'stiffness' is highly desirable; it turns your tendons into stiff physical springs that capture and return energy with every footfall, making running noticeably more effortless.",
     "category": "Cardio"
   },
   {
@@ -102,6 +116,7 @@
     "date": "2025-05-01",
     "title": "Mental Health Benefits of Regular Exercise",
     "content": "Exercise consistently reduces symptoms of anxiety and depression. Even 30 minutes of moderate activity three times per week produces significant improvements in mood.",
+    "fullArticle": "The biochemical impact of exercise on the human brain is profound. Physical activity dramatically increases the production of BDNF (Brain-Derived Neurotrophic Factor), a protein famously described as 'Miracle-Gro for the brain.' BDNF promotes neuroplasticity, protecting cognitive function and repairing brain circuits damaged by chronic stress. Furthermore, raising your heart rate alters your brain chemistry by increasing the availability of anti-anxiety neurochemicals like serotonin, GABA, and endorphins. For mild to moderate depression, numerous clinical trials have shown that adhering to a consistent routine of aerobic exercise is statistically as effective as taking SSRI antidepressant medications, while offering exclusively positive side effects.",
     "category": "Mindset"
   }
 ]

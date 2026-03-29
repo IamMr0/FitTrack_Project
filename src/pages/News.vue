@@ -65,7 +65,11 @@
             </div>
             <h3 class="fw-bold text-dark mb-3">{{ item.title }}</h3>
             <p class="card-text text-muted leading-relaxed mb-4">{{ item.content }}</p>
-            <div class="d-flex align-items-center text-primary fw-bold gap-2 cursor-pointer transition-all hover:gap-3">
+            <div 
+              class="d-flex align-items-center text-primary fw-bold gap-2 cursor-pointer transition-all hover:gap-3"
+              style="cursor: pointer;"
+              @click="openArticle(item)"
+            >
               Read full article <span>→</span>
             </div>
           </div>
@@ -101,6 +105,44 @@
       </ul>
     </nav>
   </div>
+
+  <!-- Article Modal -->
+  <Teleport to="body">
+    <div v-if="selectedArticle" class="modal-backdrop fade show" style="z-index: 1040;"></div>
+    <div 
+      class="modal fade show d-block" 
+      v-if="selectedArticle" 
+      tabindex="-1" 
+      style="z-index: 1050;"
+      @click.self="closeArticle"
+    >
+      <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+        <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+          <div class="modal-header border-0 pb-0 pt-4 px-4 px-md-5 d-flex justify-content-between align-items-start">
+            <div class="d-flex align-items-center gap-2 mb-2">
+              <span class="badge bg-primary-light text-primary px-3 py-2 rounded-pill fw-bold text-uppercase" style="font-size: 0.7rem">{{ selectedArticle.category }}</span>
+              <span class="text-muted small">•</span>
+              <time class="text-muted small fw-medium">{{ selectedArticle.date }}</time>
+            </div>
+            <button type="button" class="btn-close shadow-none" @click="closeArticle" aria-label="Close"></button>
+          </div>
+          
+          <div class="modal-body px-4 px-md-5 pb-5 pt-3">
+            <h2 class="fw-bold text-dark mb-4">{{ selectedArticle.title }}</h2>
+            
+            <div class="article-content text-dark" style="font-size: 1.1rem; line-height: 1.8;">
+              <p class="mb-4 fw-medium text-muted border-start border-primary border-4 ps-3 py-2 bg-light rounded-end">
+                {{ selectedArticle.content }}
+              </p>
+              <p class="mb-0">
+                {{ selectedArticle.fullArticle }}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Teleport>
 </template>
 
 <style scoped>
@@ -147,6 +189,18 @@ const filters = reactive({
   date: '',
   category: ''
 })
+
+const selectedArticle = ref(null)
+
+const openArticle = (item) => {
+  selectedArticle.value = item
+  document.body.style.overflow = 'hidden' // Prevent background scrolling
+}
+
+const closeArticle = () => {
+  selectedArticle.value = null
+  document.body.style.overflow = ''
+}
 
 const categories = computed(() => {
   const cats = newsData.map(n => n.category)
