@@ -1,3 +1,4 @@
+import fallbackExercises from '../data/exercises.json'
 
 const BASE_URL = 'https://exercisedb.p.rapidapi.com'
 const API_KEY = import.meta.env.VITE_RAPIDAPI_KEY
@@ -11,8 +12,8 @@ const isApiKeyMissing = !API_KEY || API_KEY === 'your_rapidapi_key_here'
 
 export async function fetchExercises(limit = 1500, offset = 0) {
   if (isApiKeyMissing) {
-    console.warn('RapidAPI Key is missing. Live data unavailable.')
-    return []
+    console.warn('RapidAPI Key is missing. Using offline exercise data.')
+    return fallbackExercises
   }
 
   try {
@@ -21,12 +22,16 @@ export async function fetchExercises(limit = 1500, offset = 0) {
     return await response.json()
   } catch (error) {
     console.error('fetchExercises error:', error)
-    return []
+    return fallbackExercises
   }
 }
 
 export async function fetchExercisesByName(name, limit = 5) {
-  if (isApiKeyMissing || !name.trim()) return []
+  if (!name.trim()) return []
+  if (isApiKeyMissing) {
+    const term = name.trim().toLowerCase()
+    return fallbackExercises.filter(ex => ex.name.toLowerCase().includes(term)).slice(0, limit)
+  }
 
   try {
     const encoded = encodeURIComponent(name.trim().toLowerCase())
@@ -35,12 +40,14 @@ export async function fetchExercisesByName(name, limit = 5) {
     return await response.json()
   } catch (error) {
     console.error('fetchExercisesByName error:', error)
-    return []
+    return fallbackExercises.filter(ex => ex.name.toLowerCase().includes(name.trim().toLowerCase())).slice(0, limit)
   }
 }
 
 export async function fetchExercisesByBodyPart(bodyPart, limit = 1500, offset = 0) {
-  if (isApiKeyMissing) return []
+  if (isApiKeyMissing) {
+    return fallbackExercises.filter(ex => ex.bodyPart.toLowerCase() === bodyPart.toLowerCase())
+  }
 
   try {
     const response = await fetch(`${BASE_URL}/exercises/bodyPart/${bodyPart}?limit=${limit}&offset=${offset}`, { headers: HEADERS })
@@ -48,12 +55,14 @@ export async function fetchExercisesByBodyPart(bodyPart, limit = 1500, offset = 
     return await response.json()
   } catch (error) {
     console.error('fetchExercisesByBodyPart error:', error)
-    return []
+    return fallbackExercises.filter(ex => ex.bodyPart.toLowerCase() === bodyPart.toLowerCase())
   }
 }
 
 export async function fetchBodyPartList() {
-  if (isApiKeyMissing) return []
+  if (isApiKeyMissing) {
+    return [...new Set(fallbackExercises.map(ex => ex.bodyPart))].sort()
+  }
 
   try {
     const response = await fetch(`${BASE_URL}/exercises/bodyPartList`, { headers: HEADERS })
@@ -61,12 +70,14 @@ export async function fetchBodyPartList() {
     return await response.json()
   } catch (error) {
     console.error('fetchBodyPartList error:', error)
-    return []
+    return [...new Set(fallbackExercises.map(ex => ex.bodyPart))].sort()
   }
 }
 
 export async function fetchEquipmentList() {
-  if (isApiKeyMissing) return []
+  if (isApiKeyMissing) {
+    return [...new Set(fallbackExercises.map(ex => ex.equipment))].sort()
+  }
 
   try {
     const response = await fetch(`${BASE_URL}/exercises/equipmentList`, { headers: HEADERS })
@@ -74,12 +85,14 @@ export async function fetchEquipmentList() {
     return await response.json()
   } catch (error) {
     console.error('fetchEquipmentList error:', error)
-    return []
+    return [...new Set(fallbackExercises.map(ex => ex.equipment))].sort()
   }
 }
 
 export async function fetchExercisesByEquipment(equipment, limit = 1500, offset = 0) {
-  if (isApiKeyMissing) return []
+  if (isApiKeyMissing) {
+    return fallbackExercises.filter(ex => ex.equipment.toLowerCase() === equipment.toLowerCase())
+  }
 
   try {
     const response = await fetch(`${BASE_URL}/exercises/equipment/${equipment}?limit=${limit}&offset=${offset}`, { headers: HEADERS })
@@ -87,12 +100,14 @@ export async function fetchExercisesByEquipment(equipment, limit = 1500, offset 
     return await response.json()
   } catch (error) {
     console.error('fetchExercisesByEquipment error:', error)
-    return []
+    return fallbackExercises.filter(ex => ex.equipment.toLowerCase() === equipment.toLowerCase())
   }
 }
 
 export async function fetchTargetList() {
-  if (isApiKeyMissing) return []
+  if (isApiKeyMissing) {
+    return [...new Set(fallbackExercises.map(ex => ex.target))].sort()
+  }
 
   try {
     const response = await fetch(`${BASE_URL}/exercises/targetList`, { headers: HEADERS })
@@ -100,12 +115,14 @@ export async function fetchTargetList() {
     return await response.json()
   } catch (error) {
     console.error('fetchTargetList error:', error)
-    return []
+    return [...new Set(fallbackExercises.map(ex => ex.target))].sort()
   }
 }
 
 export async function fetchExercisesByTarget(target, limit = 1500, offset = 0) {
-  if (isApiKeyMissing) return []
+  if (isApiKeyMissing) {
+    return fallbackExercises.filter(ex => ex.target.toLowerCase() === target.toLowerCase())
+  }
 
   try {
     const response = await fetch(`${BASE_URL}/exercises/target/${target}?limit=${limit}&offset=${offset}`, { headers: HEADERS })
@@ -113,7 +130,7 @@ export async function fetchExercisesByTarget(target, limit = 1500, offset = 0) {
     return await response.json()
   } catch (error) {
     console.error('fetchExercisesByTarget error:', error)
-    return []
+    return fallbackExercises.filter(ex => ex.target.toLowerCase() === target.toLowerCase())
   }
 }
 
