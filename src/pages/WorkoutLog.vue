@@ -162,7 +162,7 @@
                    <span class="text-muted small">•</span>
                    <time class="text-muted small fw-medium">{{ w.date }}</time>
                 </div>
-                <h3 class="fw-bold text-dark text-capitalize mb-0" v-highlight="'#e8f5e9'">{{ w.exercise }}</h3>
+                <h3 class="fw-bold text-dark text-capitalize mb-0">{{ w.exercise }}</h3>
               </div>
               <div class="d-flex gap-2">
                 <button @click="startEdit(w)" class="btn btn-light btn-sm px-3 rounded-pill border fw-bold text-primary">Edit</button>
