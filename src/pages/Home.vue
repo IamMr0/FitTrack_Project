@@ -95,38 +95,43 @@
   </div>
 </template>
 
-<script setup>
-import { RouterLink } from 'vue-router'
-
-const features = [
-  'Precision Activity Tracking',
-  '1000+ Exercise Database',
-  'Weekly Progress Reports',
-  'Global Fitness Community',
-  'Personalized Workout Plans',
-  'Nutrition & Diet Tracking'
-]
-
-const activities = [
-  {
-    title: 'Outdoor Training',
-    desc: 'Discover the best outdoor workouts to keep your routine fresh and exciting.',
-    tag: 'Adventure',
-    img: new URL('../assets/images/outdoor.png', import.meta.url).href,
-    link: '/exercises'
+<script>
+export default {
+  name: 'HomePage',
+  data() {
+    return {
+      features: [
+        'Precision Activity Tracking',
+        '1000+ Exercise Database',
+        'Weekly Progress Reports',
+        'Global Fitness Community',
+        'Personalized Workout Plans',
+        'Nutrition & Diet Tracking'
+      ],
+      activities: [
+        {
+          title: 'Outdoor Training',
+          desc: 'Discover the best outdoor workouts to keep your routine fresh and exciting.',
+          tag: 'Adventure',
+          img: new URL('../assets/images/outdoor.png', import.meta.url).href,
+          link: '/exercises'
+        },
+        {
+          title: 'Indoor Training',
+          desc: 'Improve your cardio and strength with our curated list of indoor activities.',
+          tag: 'Cardio',
+          img: new URL('../assets/images/indoor.png', import.meta.url).href,
+          link: '/exercises'
+        }
+      ]
+    }
   },
-  {
-    title: 'Indoor Training',
-    desc: 'Improve your cardio and strength with our curated list of indoor activities.',
-    tag: 'Cardio',
-    img: new URL('../assets/images/indoor.png', import.meta.url).href,
-    link: '/exercises'
+  methods: {
+    handleImageError(e) {
+      e.target.src = 'https://placehold.co/600x400?text=Fitness+Activity'
+      e.target.classList.add('opacity-50')
+    }
   }
-]
-
-const handleImageError = (e) => {
-  e.target.src = 'https://placehold.co/600x400?text=Fitness+Activity'
-  e.target.classList.add('opacity-50')
 }
 </script>
 
@@ -140,7 +145,7 @@ const handleImageError = (e) => {
 
 .max-w-2xl { max-width: 42rem; }
 .ls-tight { letter-spacing: -0.05em; }
-.shadow-2xl { shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); }
+.shadow-2xl { box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25); }
 
 .hero-shape {
   position: absolute;

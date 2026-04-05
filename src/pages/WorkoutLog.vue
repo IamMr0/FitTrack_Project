@@ -214,14 +214,10 @@
   </div>
 </template>
 
-<script setup>
-import { reactive, ref, onMounted } from 'vue'
-import { storeToRefs } from 'pinia'
+<script>
+import { mapStores, mapState } from 'pinia'
 import { useWorkoutStore } from '../stores/workoutStore'
 import { fetchExercisesByName } from '../api/exerciseApi'
-
-const workoutStore = useWorkoutStore()
-const { filteredUserWorkouts } = storeToRefs(workoutStore)
 
 const muscles = ['chest', 'back', 'upper legs', 'lower legs', 'shoulders', 'upper arms', 'waist', 'cardio', 'full body']
 
@@ -236,114 +232,110 @@ const initialForm = {
   notes: ''
 }
 
-const form = reactive({ ...initialForm })
-const editingId = ref(null)
-
-// --- Autocomplete state ---
-const suggestions = ref([])
-const suggestionsLoading = ref(false)
-const highlightIndex = ref(-1)
-let debounceTimer = null
-
-const onExerciseInput = () => {
-  highlightIndex.value = -1
-  clearTimeout(debounceTimer)
-  if (!form.exercise.trim()) {
-    suggestions.value = []
-    return
-  }
-  suggestionsLoading.value = true
-  debounceTimer = setTimeout(async () => {
-    suggestions.value = await fetchExercisesByName(form.exercise, 5)
-    suggestionsLoading.value = false
-  }, 300)
-}
-
-const selectSuggestion = (sug) => {
-  form.exercise = sug.name
-  if (sug.bodyPart) {
-    // Auto-set muscle group if it matches our options
-    const muscleMap = {
-      waist: 'waist', back: 'back', chest: 'chest',
-      shoulders: 'shoulders', 'upper arms': 'upper arms',
-      'lower arms': 'upper arms', 'upper legs': 'upper legs',
-      'lower legs': 'lower legs', cardio: 'cardio'
+export default {
+  name: 'WorkoutLogPage',
+  data() {
+    return {
+      muscles,
+      form: { ...initialForm },
+      editingId: null,
+      suggestions: [],
+      suggestionsLoading: false,
+      highlightIndex: -1,
+      debounceTimer: null,
+      localFilters: {
+        search: '',
+        type: '',
+        muscle: ''
+      }
     }
-    const matched = muscleMap[sug.bodyPart.toLowerCase()]
-    if (matched) form.muscle = matched
+  },
+  computed: {
+    ...mapStores(useWorkoutStore),
+    ...mapState(useWorkoutStore, ['filteredUserWorkouts'])
+  },
+  mounted() {
+    this.workoutStore.resetFilter()
+  },
+  methods: {
+    onExerciseInput() {
+      this.highlightIndex = -1
+      clearTimeout(this.debounceTimer)
+      if (!this.form.exercise.trim()) {
+        this.suggestions = []
+        return
+      }
+      this.suggestionsLoading = true
+      this.debounceTimer = setTimeout(async () => {
+        this.suggestions = await fetchExercisesByName(this.form.exercise, 5)
+        this.suggestionsLoading = false
+      }, 300)
+    },
+    selectSuggestion(sug) {
+      this.form.exercise = sug.name
+      if (sug.bodyPart) {
+        const muscleMap = {
+          waist: 'waist', back: 'back', chest: 'chest',
+          shoulders: 'shoulders', 'upper arms': 'upper arms',
+          'lower arms': 'upper arms', 'upper legs': 'upper legs',
+          'lower legs': 'lower legs', cardio: 'cardio'
+        }
+        const matched = muscleMap[sug.bodyPart.toLowerCase()]
+        if (matched) this.form.muscle = matched
+      }
+      this.suggestions = []
+      this.highlightIndex = -1
+    },
+    clearSuggestions() {
+      this.suggestions = []
+      this.highlightIndex = -1
+    },
+    hideSuggestionsDelayed() {
+      setTimeout(() => { this.suggestions = [] }, 150)
+    },
+    highlightNext() {
+      if (this.highlightIndex < this.suggestions.length - 1) this.highlightIndex++
+    },
+    highlightPrev() {
+      if (this.highlightIndex > 0) this.highlightIndex--
+    },
+    selectHighlighted() {
+      if (this.highlightIndex >= 0 && this.suggestions[this.highlightIndex]) {
+        this.selectSuggestion(this.suggestions[this.highlightIndex])
+      }
+    },
+    handleSubmit() {
+      if (this.editingId) {
+        this.workoutStore.updateWorkout(this.editingId, { ...this.form })
+        this.editingId = null
+      } else {
+        this.workoutStore.addWorkout({ ...this.form })
+      }
+      Object.assign(this.form, initialForm)
+    },
+    startEdit(workout) {
+      this.editingId = workout.id
+      Object.assign(this.form, workout)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    },
+    cancelEdit() {
+      this.editingId = null
+      Object.assign(this.form, initialForm)
+    },
+    handleDelete(id) {
+      if (confirm('Are you sure you want to delete this workout?')) {
+        this.workoutStore.deleteWorkout(id)
+      }
+    },
+    applyFilters() {
+      this.workoutStore.setFilter(this.localFilters)
+    },
+    resetFilters() {
+      Object.assign(this.localFilters, { search: '', type: '', muscle: '' })
+      this.workoutStore.resetFilter()
+    }
   }
-  suggestions.value = []
-  highlightIndex.value = -1
 }
-
-const clearSuggestions = () => {
-  suggestions.value = []
-  highlightIndex.value = -1
-}
-
-const hideSuggestionsDelayed = () => {
-  setTimeout(() => { suggestions.value = [] }, 150)
-}
-
-const highlightNext = () => {
-  if (highlightIndex.value < suggestions.value.length - 1) highlightIndex.value++
-}
-
-const highlightPrev = () => {
-  if (highlightIndex.value > 0) highlightIndex.value--
-}
-
-const selectHighlighted = () => {
-  if (highlightIndex.value >= 0 && suggestions.value[highlightIndex.value]) {
-    selectSuggestion(suggestions.value[highlightIndex.value])
-  }
-}
-
-const localFilters = reactive({
-  search: '',
-  type: '',
-  muscle: ''
-})
-
-const handleSubmit = () => {
-  if (editingId.value) {
-    workoutStore.updateWorkout(editingId.value, { ...form })
-    editingId.value = null
-  } else {
-    workoutStore.addWorkout({ ...form })
-  }
-  Object.assign(form, initialForm)
-}
-
-const startEdit = (workout) => {
-  editingId.value = workout.id
-  Object.assign(form, workout)
-  window.scrollTo({ top: 0, behavior: 'smooth' })
-}
-
-const cancelEdit = () => {
-  editingId.value = null
-  Object.assign(form, initialForm)
-}
-
-const handleDelete = (id) => {
-  if (confirm('Are you sure you want to delete this workout?')) {
-    workoutStore.deleteWorkout(id)
-  }
-}
-
-const applyFilters = () => {
-  workoutStore.setFilter(localFilters)
-}
-
-const resetFilters = () => {
-  Object.assign(localFilters, { search: '', type: '', muscle: '' })
-  workoutStore.resetFilter()
-}
-
-onMounted(() => {
-  workoutStore.resetFilter()
-})
 </script>
 
 <style scoped>

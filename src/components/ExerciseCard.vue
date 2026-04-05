@@ -53,36 +53,37 @@
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+<script>
 import { fetchExerciseGif } from '../api/exerciseApi'
 
-const props = defineProps({
-  exercise: {
-    type: Object,
-    required: true
+export default {
+  name: 'ExerciseCard',
+  props: {
+    exercise: {
+      type: Object,
+      required: true
+    }
+  },
+  emits: ['showDetails'],
+  data() {
+    return {
+      gifSrc: null,
+      gifLoading: true,
+      objectUrl: null
+    }
+  },
+  async mounted() {
+    if (this.exercise?.id) {
+      const url = await fetchExerciseGif(this.exercise.id)
+      this.objectUrl = url
+      this.gifSrc = url
+    }
+    this.gifLoading = false
+  },
+  unmounted() {
+    if (this.objectUrl) URL.revokeObjectURL(this.objectUrl)
   }
-})
-
-defineEmits(['showDetails'])
-
-const gifSrc = ref(null)
-const gifLoading = ref(true)
-let objectUrl = null
-
-onMounted(async () => {
-  if (props.exercise?.id) {
-    const url = await fetchExerciseGif(props.exercise.id)
-    objectUrl = url
-    gifSrc.value = url
-  }
-  gifLoading.value = false
-})
-
-// Cleanup blob URL to avoid memory leaks
-onUnmounted(() => {
-  if (objectUrl) URL.revokeObjectURL(objectUrl)
-})
+}
 </script>
 
 <style scoped>

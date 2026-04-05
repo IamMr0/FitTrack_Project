@@ -41,30 +41,31 @@
   </div>
 </template>
 
-<script setup>
-import { computed } from 'vue'
+<script>
+import { mapStores } from 'pinia'
 import { useAuthStore } from '../stores/authStore'
 
-const props = defineProps({
-  post: {
-    type: Object,
-    required: true
+export default {
+  name: 'PostCard',
+  props: {
+    post: {
+      type: Object,
+      required: true
+    }
+  },
+  emits: ['delete', 'toggleLike'],
+  computed: {
+    ...mapStores(useAuthStore),
+    isLoggedIn() { return this.authStore.isLoggedIn },
+    canDelete() {
+      return this.authStore.isLoggedIn &&
+        (this.authStore.isAdmin || this.post.userId === this.authStore.user?.id)
+    },
+    hasLiked() {
+      return this.authStore.user && this.post.likes.includes(this.authStore.user.id)
+    }
   }
-})
-
-defineEmits(['delete', 'toggleLike'])
-
-const auth = useAuthStore()
-
-const isLoggedIn = computed(() => auth.isLoggedIn)
-
-const canDelete = computed(() => {
-  return auth.isLoggedIn && (auth.isAdmin || props.post.userId === auth.user?.id)
-})
-
-const hasLiked = computed(() => {
-  return auth.user && props.post.likes.includes(auth.user.id)
-})
+}
 </script>
 
 <style scoped>

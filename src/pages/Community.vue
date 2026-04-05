@@ -97,23 +97,32 @@
 }
 </style>
 
-<script setup>
-import { ref } from 'vue'
-import { storeToRefs } from 'pinia'
+<script>
+import { mapStores, mapState } from 'pinia'
 import { useAuthStore } from '../stores/authStore'
 import { useWorkoutStore } from '../stores/workoutStore'
 import PostCard from '../components/PostCard.vue'
 
-const auth = useAuthStore()
-const workoutStore = useWorkoutStore()
-const { posts } = storeToRefs(workoutStore)
-
-const postContent = ref('')
-
-const handlePost = () => {
-  if (postContent.value.trim()) {
-    workoutStore.addPost(postContent.value.trim())
-    postContent.value = ''
+export default {
+  name: 'CommunityPage',
+  components: { PostCard },
+  computed: {
+    ...mapStores(useAuthStore, useWorkoutStore),
+    auth() { return this.authStore },
+    ...mapState(useWorkoutStore, ['posts'])
+  },
+  data() {
+    return {
+      postContent: ''
+    }
+  },
+  methods: {
+    handlePost() {
+      if (this.postContent.trim()) {
+        this.workoutStore.addPost(this.postContent.trim())
+        this.postContent = ''
+      }
+    }
   }
 }
 </script>

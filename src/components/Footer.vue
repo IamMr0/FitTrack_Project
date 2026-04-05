@@ -48,8 +48,10 @@
   </footer>
 </template>
 
-<script setup>
-import { RouterLink } from 'vue-router'
+<script>
+export default {
+  name: 'Footer'
+}
 </script>
 
 <style scoped>

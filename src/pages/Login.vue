@@ -66,29 +66,34 @@
 }
 </style>
 
-<script setup>
-import { reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
+<script>
+import { mapStores } from 'pinia'
 import { useAuthStore } from '../stores/authStore'
 
-const auth = useAuthStore()
-const router = useRouter()
-
-const form = reactive({
-  email: '',
-  password: ''
-})
-
-const error = ref('')
-
-const handleLogin = async () => {
-  error.value = ''
-  const res = await auth.login(form.email, form.password)
-  
-  if (res.success) {
-    router.push('/dashboard')
-  } else {
-    error.value = res.message
+export default {
+  name: 'LoginPage',
+  computed: {
+    ...mapStores(useAuthStore)
+  },
+  data() {
+    return {
+      form: {
+        email: '',
+        password: ''
+      },
+      error: ''
+    }
+  },
+  methods: {
+    async handleLogin() {
+      this.error = ''
+      const res = await this.authStore.login(this.form.email, this.form.password)
+      if (res.success) {
+        this.$router.push('/dashboard')
+      } else {
+        this.error = res.message
+      }
+    }
   }
 }
 </script>

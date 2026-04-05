@@ -109,44 +109,40 @@
   </div>
 </template>
 
-<script setup>
-import { reactive, ref } from 'vue'
-
-const form = reactive({
-  name: '',
-  email: '',
-  subject: '',
-  message: ''
-})
-
-const isSubmitting = ref(false)
-const formSuccess = ref(false)
-
-const submitForm = () => {
-  isSubmitting.value = true
-  formSuccess.value = false
-  
-  // Simulate an API call
-  setTimeout(() => {
-    isSubmitting.value = false
-    formSuccess.value = true
-    
-    // Reset form fields
-    form.name = ''
-    form.email = ''
-    form.subject = ''
-    form.message = ''
-    
-    // Hide success message after 5 seconds
-    setTimeout(() => {
-      formSuccess.value = false
-    }, 5000)
-  }, 1000)
-}
-
-const handleImageError = (e) => {
-  e.target.src = 'https://placehold.co/800x600?text=FitTrack+Team'
-  e.target.classList.add('opacity-50')
+<script>
+export default {
+  name: 'AboutPage',
+  data() {
+    return {
+      form: {
+        name: '',
+        email: '',
+        subject: '',
+        message: ''
+      },
+      isSubmitting: false,
+      formSuccess: false
+    }
+  },
+  methods: {
+    submitForm() {
+      this.isSubmitting = true
+      this.formSuccess = false
+      setTimeout(() => {
+        this.isSubmitting = false
+        this.formSuccess = true
+        this.form.name = ''
+        this.form.email = ''
+        this.form.subject = ''
+        this.form.message = ''
+        setTimeout(() => { this.formSuccess = false }, 5000)
+      }, 1000)
+    },
+    handleImageError(e) {
+      e.target.src = 'https://placehold.co/800x600?text=FitTrack+Team'
+      e.target.classList.add('opacity-50')
+    }
+  }
 }
 </script>
 

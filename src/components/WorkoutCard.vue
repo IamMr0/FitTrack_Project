@@ -21,19 +21,21 @@
   </div>
 </template>
 
-<script setup>
-defineProps({
-  workout: {
-    type: Object,
-    required: true
+<script>
+export default {
+  name: 'WorkoutCard',
+  props: {
+    workout: {
+      type: Object,
+      required: true
+    },
+    showActions: {
+      type: Boolean,
+      default: false
+    }
   },
-  showActions: {
-    type: Boolean,
-    default: false
-  }
-})
-
-defineEmits(['edit', 'delete'])
+  emits: ['edit', 'delete']
+}
 </script>
 
 <style scoped>

@@ -179,51 +179,66 @@
 }
 </style>
 
-<script setup>
-import { ref, computed, reactive } from 'vue'
+<script>
 import newsData from '../data/news.json'
-import { usePagination } from '../composables/usePagination'
 
-const filters = reactive({
-  search: '',
-  date: '',
-  category: ''
-})
-
-const selectedArticle = ref(null)
-
-const openArticle = (item) => {
-  selectedArticle.value = item
-  document.body.style.overflow = 'hidden' // Prevent background scrolling
-}
-
-const closeArticle = () => {
-  selectedArticle.value = null
-  document.body.style.overflow = ''
-}
-
-const categories = computed(() => {
-  const cats = newsData.map(n => n.category)
-  return [...new Set(cats)].sort()
-})
-
-const filteredNews = computed(() => {
-  return newsData.filter(item => {
-    const matchesSearch = !filters.search || 
-      item.title.toLowerCase().includes(filters.search.toLowerCase()) ||
-      item.content.toLowerCase().includes(filters.search.toLowerCase()) ||
-      item.category.toLowerCase().includes(filters.search.toLowerCase())
-    
-    const matchesDate = !filters.date || item.date === filters.date
-    const matchesCategory = !filters.category || item.category === filters.category
-    
-    return matchesSearch && matchesDate && matchesCategory
-  })
-})
-
-const { currentPage, paginated, totalPages, goTo } = usePagination(filteredNews, 5)
-
-const handleFilterChange = () => {
-  goTo(1)
+export default {
+  name: 'NewsPage',
+  data() {
+    return {
+      filters: {
+        search: '',
+        date: '',
+        category: ''
+      },
+      selectedArticle: null,
+      currentPage: 1,
+      itemsPerPage: 5
+    }
+  },
+  computed: {
+    categories() {
+      const cats = newsData.map(n => n.category)
+      return [...new Set(cats)].sort()
+    },
+    filteredNews() {
+      return newsData.filter(item => {
+        const matchesSearch = !this.filters.search || 
+          item.title.toLowerCase().includes(this.filters.search.toLowerCase()) ||
+          item.content.toLowerCase().includes(this.filters.search.toLowerCase()) ||
+          item.category.toLowerCase().includes(this.filters.search.toLowerCase())
+        
+        const matchesDate = !this.filters.date || item.date === this.filters.date
+        const matchesCategory = !this.filters.category || item.category === this.filters.category
+        
+        return matchesSearch && matchesDate && matchesCategory
+      })
+    },
+    paginated() {
+      const start = (this.currentPage - 1) * this.itemsPerPage
+      return this.filteredNews.slice(start, start + this.itemsPerPage)
+    },
+    totalPages() {
+      return Math.ceil(this.filteredNews.length / this.itemsPerPage)
+    }
+  },
+  methods: {
+    openArticle(item) {
+      this.selectedArticle = item
+      document.body.style.overflow = 'hidden' // Prevent background scrolling
+    },
+    closeArticle() {
+      this.selectedArticle = null
+      document.body.style.overflow = ''
+    },
+    goTo(page) {
+      if (page >= 1 && page <= this.totalPages) {
+        this.currentPage = page
+      }
+    },
+    handleFilterChange() {
+      this.goTo(1)
+    }
+  }
 }
 </script>

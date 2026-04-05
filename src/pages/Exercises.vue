@@ -256,8 +256,7 @@
 }
 </style>
 
-<script setup>
-import { ref, onMounted, computed, watch } from "vue";
+<script>
 import ExerciseCard from "../components/ExerciseCard.vue";
 import {
   fetchExercises,
@@ -269,133 +268,143 @@ import {
   fetchTargetList,
   fetchExerciseGif,
 } from "../api/exerciseApi";
-import { usePagination } from "../composables/usePagination";
 
-const exercises = ref([]);
-const loading = ref(true);
-const search = ref("");
-const isOffline = ref(
-  !import.meta.env.VITE_RAPIDAPI_KEY ||
-    import.meta.env.VITE_RAPIDAPI_KEY === "your_rapidapi_key_here",
-);
-
-// Cascading filter state
-const filterType = ref("all"); // 'all' | 'bodyPart' | 'equipment' | 'target'
-const filterValue = ref("");
-const filterOptions = ref([]);
-const filterOptionsLoading = ref(false);
-
-const filterTypeLabel = computed(() => {
-  const labels = { bodyPart: 'Body Part', equipment: 'Equipment', target: 'Target' };
-  return labels[filterType.value] || '';
-});
-
-// When filter type changes, fetch the corresponding options list
-const onFilterTypeChange = async () => {
-  filterValue.value = "";
-  filterOptions.value = [];
-  if (filterType.value === "all") {
-    await loadExercises();
-    return;
-  }
-  filterOptionsLoading.value = true;
-  try {
-    if (filterType.value === "bodyPart") {
-      filterOptions.value = await fetchBodyPartList();
-    } else if (filterType.value === "equipment") {
-      filterOptions.value = await fetchEquipmentList();
-    } else if (filterType.value === "target") {
-      filterOptions.value = await fetchTargetList();
-    }
-  } finally {
-    filterOptionsLoading.value = false;
-  }
-  // Load all exercises (unfiltered by value) when type changes
-  await loadExercises();
+export default {
+  name: "ExercisesPage",
+  components: {
+    ExerciseCard,
+  },
+  data() {
+    return {
+      exercises: [],
+      loading: true,
+      search: "",
+      isOffline:
+        !import.meta.env.VITE_RAPIDAPI_KEY ||
+        import.meta.env.VITE_RAPIDAPI_KEY === "your_rapidapi_key_here",
+      filterType: "all", // 'all' | 'bodyPart' | 'equipment' | 'target'
+      filterValue: "",
+      filterOptions: [],
+      filterOptionsLoading: false,
+      selectedExercise: null,
+      modalGifSrc: null,
+      modalGifLoading: false,
+      modalGifObjectUrl: null,
+      currentPage: 1,
+      itemsPerPage: 12,
+    };
+  },
+  computed: {
+    filterTypeLabel() {
+      const labels = {
+        bodyPart: "Body Part",
+        equipment: "Equipment",
+        target: "Target",
+      };
+      return labels[this.filterType] || "";
+    },
+    filteredExercises() {
+      return this.exercises.filter((ex) => {
+        const term = this.search.toLowerCase();
+        return !term || ex.name.toLowerCase().includes(term);
+      });
+    },
+    paginated() {
+      const start = (this.currentPage - 1) * this.itemsPerPage;
+      return this.filteredExercises.slice(start, start + this.itemsPerPage);
+    },
+    totalPages() {
+      return Math.ceil(this.filteredExercises.length / this.itemsPerPage);
+    },
+    visiblePages() {
+      const pages = [];
+      const start = Math.max(1, this.currentPage - 2);
+      const end = Math.min(this.totalPages, start + 4);
+      for (let i = start; i <= end; i++) pages.push(i);
+      return pages;
+    },
+  },
+  watch: {
+    async selectedExercise(ex) {
+      if (this.modalGifObjectUrl) {
+        URL.revokeObjectURL(this.modalGifObjectUrl);
+        this.modalGifObjectUrl = null;
+      }
+      this.modalGifSrc = null;
+      if (!ex?.id) return;
+      this.modalGifLoading = true;
+      try {
+        const url = await fetchExerciseGif(ex.id);
+        this.modalGifObjectUrl = url;
+        this.modalGifSrc = url;
+      } finally {
+        this.modalGifLoading = false;
+      }
+    },
+  },
+  mounted() {
+    this.loadExercises();
+  },
+  methods: {
+    async onFilterTypeChange() {
+      this.filterValue = "";
+      this.filterOptions = [];
+      if (this.filterType === "all") {
+        await this.loadExercises();
+        return;
+      }
+      this.filterOptionsLoading = true;
+      try {
+        if (this.filterType === "bodyPart") {
+          this.filterOptions = await fetchBodyPartList();
+        } else if (this.filterType === "equipment") {
+          this.filterOptions = await fetchEquipmentList();
+        } else if (this.filterType === "target") {
+          this.filterOptions = await fetchTargetList();
+        }
+      } finally {
+        this.filterOptionsLoading = false;
+      }
+      await this.loadExercises();
+    },
+    async onFilterValueChange() {
+      this.goTo(1);
+      await this.loadExercises();
+    },
+    goTo(page) {
+      if (page >= 1 && page <= this.totalPages) {
+        this.currentPage = page;
+      }
+    },
+    showDetails(ex) {
+      this.selectedExercise = ex;
+    },
+    async loadExercises() {
+      this.loading = true;
+      try {
+        if (this.filterType === "all" || !this.filterValue) {
+          this.exercises = await fetchExercises();
+        } else if (this.filterType === "bodyPart") {
+          this.exercises = await fetchExercisesByBodyPart(this.filterValue);
+        } else if (this.filterType === "equipment") {
+          this.exercises = await fetchExercisesByEquipment(this.filterValue);
+        } else if (this.filterType === "target") {
+          this.exercises = await fetchExercisesByTarget(this.filterValue);
+        }
+      } catch (error) {
+        console.error("Error loading exercises:", error);
+      } finally {
+        this.loading = false;
+      }
+    },
+    clearFilters() {
+      this.search = "";
+      this.filterType = "all";
+      this.filterValue = "";
+      this.filterOptions = [];
+      this.goTo(1);
+      this.loadExercises();
+    },
+  },
 };
-
-// When filter value changes, fetch exercises filtered by that value
-const onFilterValueChange = async () => {
-  goTo(1);
-  await loadExercises();
-};
-
-// Name search is purely client-side filtering
-const filteredExercises = computed(() => {
-  return exercises.value.filter((ex) => {
-    const term = search.value.toLowerCase();
-    return !term || ex.name.toLowerCase().includes(term);
-  });
-});
-
-const { currentPage, paginated, totalPages, goTo } = usePagination(
-  filteredExercises,
-  12,
-);
-
-const selectedExercise = ref(null);
-const modalGifSrc = ref(null);
-const modalGifLoading = ref(false);
-let modalGifObjectUrl = null;
-
-const showDetails = (ex) => {
-  selectedExercise.value = ex;
-};
-
-// Watch selectedExercise to fetch the GIF whenever user opens a detail view
-watch(selectedExercise, async (ex) => {
-  if (modalGifObjectUrl) {
-    URL.revokeObjectURL(modalGifObjectUrl);
-    modalGifObjectUrl = null;
-  }
-  modalGifSrc.value = null;
-  if (!ex?.id) return;
-  modalGifLoading.value = true;
-  try {
-    const url = await fetchExerciseGif(ex.id);
-    modalGifObjectUrl = url;
-    modalGifSrc.value = url;
-  } finally {
-    modalGifLoading.value = false;
-  }
-});
-
-const visiblePages = computed(() => {
-  const pages = [];
-  const start = Math.max(1, currentPage.value - 2);
-  const end = Math.min(totalPages.value, start + 4);
-  for (let i = start; i <= end; i++) pages.push(i);
-  return pages;
-});
-
-// Core data loader — uses filter type & value to decide which API to call
-const loadExercises = async () => {
-  loading.value = true;
-  try {
-    if (filterType.value === "all" || !filterValue.value) {
-      exercises.value = await fetchExercises();
-    } else if (filterType.value === "bodyPart") {
-      exercises.value = await fetchExercisesByBodyPart(filterValue.value);
-    } else if (filterType.value === "equipment") {
-      exercises.value = await fetchExercisesByEquipment(filterValue.value);
-    } else if (filterType.value === "target") {
-      exercises.value = await fetchExercisesByTarget(filterValue.value);
-    }
-  } catch (error) {
-    console.error("Error loading exercises:", error);
-  } finally {
-    loading.value = false;
-  }
-};
-
-const clearFilters = () => {
-  search.value = "";
-  filterType.value = "all";
-  filterValue.value = "";
-  filterOptions.value = [];
-  goTo(1);
-  loadExercises();
-};
-
-onMounted(loadExercises);
 </script>

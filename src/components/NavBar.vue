@@ -110,15 +110,21 @@
 }
 </style>
 
-<script setup>
+<script>
+import { mapStores } from 'pinia'
 import { useAuthStore } from '../stores/authStore'
-import { useRouter } from 'vue-router'
 
-const auth = useAuthStore()
-const router = useRouter()
-
-const handleLogout = () => {
-  auth.logout()
-  router.push('/')
+export default {
+  name: 'NavBar',
+  computed: {
+    ...mapStores(useAuthStore),
+    auth() { return this.authStore }
+  },
+  methods: {
+    handleLogout() {
+      this.authStore.logout()
+      this.$router.push('/')
+    }
+  }
 }
 </script>

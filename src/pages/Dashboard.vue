@@ -153,9 +153,8 @@
   </div>
 </template>
 
-<script setup>
-import { computed } from 'vue'
-import { storeToRefs } from 'pinia'
+<script>
+import { mapStores, mapState } from 'pinia'
 import { useAuthStore } from '../stores/authStore'
 import { useWorkoutStore } from '../stores/workoutStore'
 import WorkoutCard from '../components/WorkoutCard.vue'
@@ -176,171 +175,178 @@ import { Bar, Doughnut, Line } from 'vue-chartjs'
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, PointElement, LineElement, ArcElement, Title, Tooltip, Legend, Filler)
 
-const auth = useAuthStore()
-const workoutStore = useWorkoutStore()
-
-const { filteredUserWorkouts, statsByType, weeklyVolume } = storeToRefs(workoutStore)
-
-// All user workouts (unfiltered)
-const allUserWorkouts = computed(() => {
-  if (!auth.user) return []
-  return workoutStore.workouts.filter(w => w.userId === auth.user.id)
-})
-
-const totalSets = computed(() => allUserWorkouts.value.reduce((acc, w) => acc + w.sets, 0))
-const totalReps = computed(() => allUserWorkouts.value.reduce((acc, w) => acc + (w.sets * w.reps), 0))
-const uniqueMuscles = computed(() => new Set(allUserWorkouts.value.map(w => w.muscle)).size)
-const totalCalories = computed(() => allUserWorkouts.value.reduce((acc, w) => acc + (w.sets * w.reps * 0.5), 0).toFixed(0))
-
-const recentWorkouts = computed(() => {
-  return [...allUserWorkouts.value]
-    .sort((a, b) => new Date(b.date) - new Date(a.date))
-    .slice(0, 5)
-})
-
-const stats = computed(() => [
-  { label: 'Workouts', value: allUserWorkouts.value.length, colorClass: 'bg-primary' },
-  { label: 'Total Sets', value: totalSets.value, colorClass: 'bg-info' },
-  { label: 'Total Reps', value: totalReps.value, colorClass: 'bg-warning' },
-  { label: 'Est. Calories', value: `${totalCalories.value}`, colorClass: 'bg-success' }
-])
-
-// ──── Personal Records (heaviest weight per exercise) ────
-const personalRecords = computed(() => {
-  const prMap = {}
-  allUserWorkouts.value.forEach(w => {
-    if (w.weight > 0) {
-      if (!prMap[w.exercise] || w.weight > prMap[w.exercise].weight) {
-        prMap[w.exercise] = { exercise: w.exercise, weight: w.weight, sets: w.sets, reps: w.reps, date: w.date }
+export default {
+  name: 'DashboardPage',
+  components: {
+    WorkoutCard,
+    Bar,
+    Doughnut,
+    Line
+  },
+  data() {
+    return {
+      typeColors: {
+        Strength: 'rgba(79, 70, 229, 0.8)',
+        Cardio: 'rgba(34, 197, 94, 0.8)',
+        Flexibility: 'rgba(251, 191, 36, 0.8)',
+        Other: 'rgba(156, 163, 175, 0.8)'
+      },
+      barOptions: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { backgroundColor: '#1e293b', titleFont: { size: 13 }, bodyFont: { size: 12 }, padding: 12, cornerRadius: 8 }
+        },
+        scales: {
+          y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { size: 11 } } },
+          x: { grid: { display: false }, ticks: { font: { size: 11 } } }
+        }
+      },
+      lineOptions: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { backgroundColor: '#1e293b', titleFont: { size: 13 }, bodyFont: { size: 12 }, padding: 12, cornerRadius: 8 }
+        },
+        scales: {
+          y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { size: 11 } } },
+          x: { grid: { display: false }, ticks: { font: { size: 11 } } }
+        }
+      },
+      doughnutOptions: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '65%',
+        plugins: {
+          legend: { position: 'bottom', labels: { padding: 16, font: { size: 12 }, usePointStyle: true, pointStyle: 'circle' } },
+          tooltip: { backgroundColor: '#1e293b', padding: 12, cornerRadius: 8 }
+        }
       }
     }
-  })
-  return Object.values(prMap).sort((a, b) => b.weight - a.weight).slice(0, 5)
-})
-
-// ──── Weekly Bar Chart (last 7 days) ────
-const weeklyChartData = computed(() => {
-  const days = []
-  const volumes = []
-  for (let i = 6; i >= 0; i--) {
-    const d = new Date()
-    d.setDate(d.getDate() - i)
-    const dateStr = d.toISOString().split('T')[0]
-    const dayName = d.toLocaleDateString('en-US', { weekday: 'short' })
-    days.push(dayName)
-    const dayVolume = allUserWorkouts.value
-      .filter(w => w.date === dateStr)
-      .reduce((sum, w) => sum + (w.sets * w.reps), 0)
-    volumes.push(dayVolume)
-  }
-  return {
-    labels: days,
-    datasets: [{
-      label: 'Volume (sets × reps)',
-      data: volumes,
-      backgroundColor: 'rgba(79, 70, 229, 0.6)',
-      borderColor: 'rgba(79, 70, 229, 1)',
-      borderWidth: 2,
-      borderRadius: 8,
-      borderSkipped: false
-    }]
-  }
-})
-
-// ──── Monthly Line Chart (last 30 days, grouped by week) ────
-const monthlyChartData = computed(() => {
-  const weeks = []
-  const volumes = []
-  for (let w = 3; w >= 0; w--) {
-    const weekEnd = new Date()
-    weekEnd.setDate(weekEnd.getDate() - (w * 7))
-    const weekStart = new Date(weekEnd)
-    weekStart.setDate(weekStart.getDate() - 6)
-
-    const label = `${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
-    weeks.push(label)
-
-    const weekVolume = allUserWorkouts.value
-      .filter(wo => {
-        const d = new Date(wo.date)
-        return d >= weekStart && d <= weekEnd
+  },
+  computed: {
+    ...mapStores(useAuthStore, useWorkoutStore),
+    ...mapState(useWorkoutStore, ['filteredUserWorkouts', 'statsByType', 'weeklyVolume']),
+    auth() { return this.authStore },
+    
+    allUserWorkouts() {
+      if (!this.auth?.user) return []
+      return this.workoutStore.workouts.filter(w => w.userId === this.auth.user.id)
+    },
+    totalSets() {
+      return this.allUserWorkouts.reduce((acc, w) => acc + w.sets, 0)
+    },
+    totalReps() {
+      return this.allUserWorkouts.reduce((acc, w) => acc + (w.sets * w.reps), 0)
+    },
+    uniqueMuscles() {
+      return new Set(this.allUserWorkouts.map(w => w.muscle)).size
+    },
+    totalCalories() {
+      return this.allUserWorkouts.reduce((acc, w) => acc + (w.sets * w.reps * 0.5), 0).toFixed(0)
+    },
+    recentWorkouts() {
+      return [...this.allUserWorkouts]
+        .sort((a, b) => new Date(b.date) - new Date(a.date))
+        .slice(0, 5)
+    },
+    stats() {
+      return [
+        { label: 'Workouts', value: this.allUserWorkouts.length, colorClass: 'bg-primary' },
+        { label: 'Total Sets', value: this.totalSets, colorClass: 'bg-info' },
+        { label: 'Total Reps', value: this.totalReps, colorClass: 'bg-warning' },
+        { label: 'Est. Calories', value: `${this.totalCalories}`, colorClass: 'bg-success' }
+      ]
+    },
+    personalRecords() {
+      const prMap = {}
+      this.allUserWorkouts.forEach(w => {
+        if (w.weight > 0) {
+          if (!prMap[w.exercise] || w.weight > prMap[w.exercise].weight) {
+            prMap[w.exercise] = { exercise: w.exercise, weight: w.weight, sets: w.sets, reps: w.reps, date: w.date }
+          }
+        }
       })
-      .reduce((sum, wo) => sum + (wo.sets * wo.reps), 0)
-    volumes.push(weekVolume)
-  }
-  return {
-    labels: weeks,
-    datasets: [{
-      label: 'Weekly Volume',
-      data: volumes,
-      borderColor: 'rgba(79, 70, 229, 1)',
-      backgroundColor: 'rgba(79, 70, 229, 0.1)',
-      fill: true,
-      tension: 0.4,
-      pointBackgroundColor: 'rgba(79, 70, 229, 1)',
-      pointRadius: 5,
-      pointHoverRadius: 8
-    }]
-  }
-})
+      return Object.values(prMap).sort((a, b) => b.weight - a.weight).slice(0, 5)
+    },
+    weeklyChartData() {
+      const days = []
+      const volumes = []
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date()
+        d.setDate(d.getDate() - i)
+        const dateStr = d.toISOString().split('T')[0]
+        const dayName = d.toLocaleDateString('en-US', { weekday: 'short' })
+        days.push(dayName)
+        const dayVolume = this.allUserWorkouts
+          .filter(w => w.date === dateStr)
+          .reduce((sum, w) => sum + (w.sets * w.reps), 0)
+        volumes.push(dayVolume)
+      }
+      return {
+        labels: days,
+        datasets: [{
+          label: 'Volume (sets × reps)',
+          data: volumes,
+          backgroundColor: 'rgba(79, 70, 229, 0.6)',
+          borderColor: 'rgba(79, 70, 229, 1)',
+          borderWidth: 2,
+          borderRadius: 8,
+          borderSkipped: false
+        }]
+      }
+    },
+    monthlyChartData() {
+      const weeks = []
+      const volumes = []
+      for (let w = 3; w >= 0; w--) {
+        const weekEnd = new Date()
+        weekEnd.setDate(weekEnd.getDate() - (w * 7))
+        const weekStart = new Date(weekEnd)
+        weekStart.setDate(weekStart.getDate() - 6)
 
-// ──── Doughnut Chart (training split) ────
-const typeColors = {
-  Strength: 'rgba(79, 70, 229, 0.8)',
-  Cardio: 'rgba(34, 197, 94, 0.8)',
-  Flexibility: 'rgba(251, 191, 36, 0.8)',
-  Other: 'rgba(156, 163, 175, 0.8)'
-}
+        const label = `${weekStart.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${weekEnd.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
+        weeks.push(label)
 
-const doughnutData = computed(() => {
-  const labels = Object.keys(statsByType.value)
-  const data = Object.values(statsByType.value)
-  const colors = labels.map(l => typeColors[l] || 'rgba(156, 163, 175, 0.8)')
-  return {
-    labels,
-    datasets: [{
-      data,
-      backgroundColor: colors,
-      borderWidth: 0,
-      hoverOffset: 8
-    }]
-  }
-})
-
-// ──── Chart Options ────
-const barOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: { display: false },
-    tooltip: { backgroundColor: '#1e293b', titleFont: { size: 13 }, bodyFont: { size: 12 }, padding: 12, cornerRadius: 8 }
-  },
-  scales: {
-    y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { size: 11 } } },
-    x: { grid: { display: false }, ticks: { font: { size: 11 } } }
-  }
-}
-
-const lineOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: { display: false },
-    tooltip: { backgroundColor: '#1e293b', titleFont: { size: 13 }, bodyFont: { size: 12 }, padding: 12, cornerRadius: 8 }
-  },
-  scales: {
-    y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { font: { size: 11 } } },
-    x: { grid: { display: false }, ticks: { font: { size: 11 } } }
-  }
-}
-
-const doughnutOptions = {
-  responsive: true,
-  maintainAspectRatio: false,
-  cutout: '65%',
-  plugins: {
-    legend: { position: 'bottom', labels: { padding: 16, font: { size: 12 }, usePointStyle: true, pointStyle: 'circle' } },
-    tooltip: { backgroundColor: '#1e293b', padding: 12, cornerRadius: 8 }
+        const weekVolume = this.allUserWorkouts
+          .filter(wo => {
+            const d = new Date(wo.date)
+            return d >= weekStart && d <= weekEnd
+          })
+          .reduce((sum, wo) => sum + (wo.sets * wo.reps), 0)
+        volumes.push(weekVolume)
+      }
+      return {
+        labels: weeks,
+        datasets: [{
+          label: 'Weekly Volume',
+          data: volumes,
+          borderColor: 'rgba(79, 70, 229, 1)',
+          backgroundColor: 'rgba(79, 70, 229, 0.1)',
+          fill: true,
+          tension: 0.4,
+          pointBackgroundColor: 'rgba(79, 70, 229, 1)',
+          pointRadius: 5,
+          pointHoverRadius: 8
+        }]
+      }
+    },
+    doughnutData() {
+      const labels = Object.keys(this.statsByType)
+      const data = Object.values(this.statsByType)
+      const colors = labels.map(l => this.typeColors[l] || 'rgba(156, 163, 175, 0.8)')
+      return {
+        labels,
+        datasets: [{
+          data,
+          backgroundColor: colors,
+          borderWidth: 0,
+          hoverOffset: 8
+        }]
+      }
+    }
   }
 }
 </script>

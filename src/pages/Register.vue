@@ -116,65 +116,69 @@
 }
 </style>
 
-<script setup>
-import { reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
+<script>
+import { mapStores } from 'pinia'
 import { useAuthStore } from '../stores/authStore'
 
-const auth = useAuthStore()
-const router = useRouter()
+export default {
+  name: 'RegisterPage',
+  computed: {
+    ...mapStores(useAuthStore)
+  },
+  data() {
+    return {
+      form: {
+        firstName: '',
+        lastName: '',
+        email: '',
+        password: '',
+        confirm: ''
+      },
+      v$: {
+        firstName: { $error: false },
+        lastName: { $error: false },
+        email: { $error: false },
+        password: { $error: false },
+        confirm: { $error: false }
+      },
+      error: '',
+      success: false,
+      loading: false
+    }
+  },
+  methods: {
+    async handleRegister() {
+      // Reset validation
+      Object.keys(this.v$).forEach(key => this.v$[key].$error = false)
+      this.error = ''
 
-const form = reactive({
-  firstName: '',
-  lastName: '',
-  email: '',
-  password: '',
-  confirm: ''
-})
+      // Validation
+      let isValid = true
+      if (!this.form.firstName) { this.v$.firstName.$error = true; isValid = false }
+      if (!this.form.lastName) { this.v$.lastName.$error = true; isValid = false }
+      if (!this.form.email || !this.form.email.includes('@')) { this.v$.email.$error = true; isValid = false }
+      const hasUppercase = /[A-Z]/.test(this.form.password)
+      const hasNumber = /[0-9]/.test(this.form.password)
+      const hasSymbol = /[^A-Za-z0-9]/.test(this.form.password)
+      if (!this.form.password || this.form.password.length < 8 || !hasUppercase || !hasNumber || !hasSymbol) {
+        this.v$.password.$error = true; isValid = false
+      }
+      if (this.form.password !== this.form.confirm) { this.v$.confirm.$error = true; isValid = false }
 
-const v$ = reactive({
-  firstName: { $error: false },
-  lastName: { $error: false },
-  email: { $error: false },
-  password: { $error: false },
-  confirm: { $error: false }
-})
+      if (!isValid) return
 
-const error = ref('')
-const success = ref(false)
-const loading = ref(false)
-
-const handleRegister = async () => {
-  // Simple validation reset
-  Object.keys(v$).forEach(key => v$[key].$error = false)
-  error.value = ''
-
-  // Validation
-  let isValid = true
-  if (!form.firstName) { v$.firstName.$error = true; isValid = false }
-  if (!form.lastName) { v$.lastName.$error = true; isValid = false }
-  if (!form.email || !form.email.includes('@')) { v$.email.$error = true; isValid = false }
-  const hasUppercase = /[A-Z]/.test(form.password)
-  const hasNumber = /[0-9]/.test(form.password)
-  const hasSymbol = /[^A-Za-z0-9]/.test(form.password)
-  if (!form.password || form.password.length < 8 || !hasUppercase || !hasNumber || !hasSymbol) {
-    v$.password.$error = true; isValid = false
+      this.loading = true
+      const res = await this.authStore.register(
+        this.form.firstName, this.form.lastName, this.form.email, this.form.password
+      )
+      if (res.success) {
+        this.success = true
+        setTimeout(() => { this.$router.push('/login') }, 1500)
+      } else {
+        this.error = res.message
+      }
+      this.loading = false
+    }
   }
-  if (form.password !== form.confirm) { v$.confirm.$error = true; isValid = false }
-
-  if (!isValid) return
-
-  loading.value = true
-  const res = await auth.register(form.firstName, form.lastName, form.email, form.password)
-  
-  if (res.success) {
-    success.value = true
-    setTimeout(() => {
-      router.push('/login')
-    }, 1500)
-  } else {
-    error.value = res.message
-  }
-  loading.value = false
 }
 </script>
