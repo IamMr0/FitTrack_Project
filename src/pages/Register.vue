@@ -69,10 +69,10 @@
               type="password" 
               class="form-control py-2 rounded-3" 
               :class="{ 'is-invalid': v$.password.$error }"
-              placeholder="Min. 6 characters"
+              placeholder="Min. 8 chars, 1 uppercase, 1 number, 1 symbol"
               aria-describedby="passwordFeedback"
             >
-            <div id="passwordFeedback" class="invalid-feedback">Password must be at least 6 characters.</div>
+            <div id="passwordFeedback" class="invalid-feedback">Password must be at least 8 characters with 1 uppercase letter, 1 number, and 1 symbol.</div>
           </div>
 
           <div class="mb-4">
@@ -154,7 +154,12 @@ const handleRegister = async () => {
   if (!form.firstName) { v$.firstName.$error = true; isValid = false }
   if (!form.lastName) { v$.lastName.$error = true; isValid = false }
   if (!form.email || !form.email.includes('@')) { v$.email.$error = true; isValid = false }
-  if (!form.password || form.password.length < 6) { v$.password.$error = true; isValid = false }
+  const hasUppercase = /[A-Z]/.test(form.password)
+  const hasNumber = /[0-9]/.test(form.password)
+  const hasSymbol = /[^A-Za-z0-9]/.test(form.password)
+  if (!form.password || form.password.length < 8 || !hasUppercase || !hasNumber || !hasSymbol) {
+    v$.password.$error = true; isValid = false
+  }
   if (form.password !== form.confirm) { v$.confirm.$error = true; isValid = false }
 
   if (!isValid) return
