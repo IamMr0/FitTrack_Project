@@ -21,19 +21,19 @@
           <li class="nav-item">
             <RouterLink class="nav-link px-3" to="/">Home</RouterLink>
           </li>
-          <li class="nav-item">
-            <RouterLink class="nav-link px-3" to="/news">News</RouterLink>
+           <li class="nav-item">
+            <RouterLink class="nav-link px-3" to="/about">About</RouterLink>
           </li>
           <li class="nav-item">
-            <RouterLink class="nav-link px-3" to="/exercises">Exercises</RouterLink>
+            <RouterLink class="nav-link px-3" to="/news">News</RouterLink>
           </li>
           <li class="nav-item">
             <RouterLink class="nav-link px-3" to="/community">Community</RouterLink>
           </li>
           <li class="nav-item">
-            <RouterLink class="nav-link px-3" to="/about">About</RouterLink>
+            <RouterLink class="nav-link px-3" to="/exercises">Exercises</RouterLink>
           </li>
-
+          
           <!-- Logged In Links -->
           <template v-if="auth.isLoggedIn">
             <li class="nav-item">
